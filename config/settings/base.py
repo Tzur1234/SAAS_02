@@ -73,6 +73,7 @@ THIRD_PARTY_APPS = [
     "rest_framework.authtoken",
     "corsheaders",
     "drf_spectacular",
+
 ]
 
 LOCAL_APPS = [
@@ -97,7 +98,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "users:redirect"
+LOGIN_REDIRECT_URL = "/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 
@@ -289,5 +290,11 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_PERMISSIONS": ["rest_framework.permissions.IsAdminUser"],
 }
-# Your stuff...
+# STRIPE
 # ------------------------------------------------------------------------------
+
+# STRIPE
+
+STRIPE_SECRET_KEY=env('STRIPE_SECRET_KEY')
+
+STRIPE_PUBLIC_KEY=env('STRIPE_PUBLIC_KEY')
