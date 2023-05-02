@@ -1,7 +1,9 @@
 # PostgreSQL
 # ------------------------------------------------------------------------------
-POSTGRES_HOST=postgres
-POSTGRES_PORT=5432
-POSTGRES_DB=saas_02
-POSTGRES_USER=vIFCsvwCimISCdEqPGEPZzsvyueLMhgc
-POSTGRES_PASSWORD=CwoytRqhxaBapwS427uGr1TZAzkOX1TGvzi8J39DXqbD0ms7aTcV260cdWuzoi1R
+
+DATABASE_URL=postgresql://doadmin:AVNS_Jex8q69S4KIEtQDG7RS@saas2db-do-user-13657417-0.b.db.ondigitalocean.com:25060/defaultdb?sslmode=require
+POSTGRES_HOST=saas2db-do-user-13657417-0.b.db.ondigitalocean.com
+POSTGRES_PORT=25060
+POSTGRES_DB=defaultdb
+POSTGRES_USER=doadmin
+POSTGRES_PASSWORD=AVNS_Jex8q69S4KIEtQDG7RS
