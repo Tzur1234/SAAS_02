@@ -24,3 +24,6 @@ drf-spectacular==0.26.2  # https://github.com/tfranzel/drf-spectacular
 # AWS
 boto3==1.26.124
 django-storages==1.13.2
+
+# Stripe
+stripe==5.4.0

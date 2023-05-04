@@ -11,6 +11,12 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
 from saas_02.core.serializers import ChangePasswordSerializer
 from django.contrib.auth import authenticate
+from saas_02.core.models import TrackedRequest, Membership
+from django.conf import settings
+
+import stripe
+stripe.api_key = settings.STRIPE_SECRET_KEY
+import datetime
 
 def get_user_from_token(request):
     '''
@@ -133,3 +139,40 @@ class ResetPasswordAPIView(APIView):
 
        
 
+class UserBillingDetailsView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self, request, *args, **kwargs):
+        user = get_user_from_token(request)
+        membership = user.membership
+
+        # count All API requests since the begging of the month
+        today = datetime.datetime.now() #today
+        month_start = datetime.date(today.year, today.month, 1) # the beggining of the month
+        tracked_request_count = TrackedRequest.objects.filter(user=user, timestamp__gte=month_start).count()
+
+        # Callculate due
+        amount_due = 0
+        if user.is_member:
+            # USE API to check the monthly due
+            amount_due = stripe.Invoice.upcoming(
+                customer=user.stripe_customer_id)['amount_due'] / 100
+            print('amount_due: ',amount_due)
+
+        # object to return
+        obj = {
+            'membershipType': membership.get_type_display(),
+            'free_trial_end_date': membership.end_date,
+            'next_billing_date': membership.end_date,
+            'api_request_count': tracked_request_count,
+            'amount_due': amount_due
+        }
+
+        return Response(data=obj, status=HTTP_200_OK)
+
+
+
+
+
+
+    

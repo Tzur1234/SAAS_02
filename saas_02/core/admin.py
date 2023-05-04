@@ -1,3 +1,4 @@
 from django.contrib import admin
+from saas_02.core.models import Membership
 
-# Register your models here.
+admin.site.register(Membership)

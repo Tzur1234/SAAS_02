@@ -17,6 +17,7 @@ urlpatterns = [
     
     # billing 
     path("billing/", TemplateView.as_view(template_name='pages/billing.html'), name='billing'), # billing page
+    path("billing-detail/", views.UserBillingDetailsView.as_view(), name='billing-detail'), # billing page
 
     
 ]
