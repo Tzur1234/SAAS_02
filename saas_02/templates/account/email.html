@@ -1,5 +1,6 @@
 
 {% extends "account/base.html" %}
+{% load static %}
 
 {% load i18n %}
 {% load crispy_forms_tags %}
@@ -12,11 +13,47 @@
 {% if user.emailaddress_set.all %}
 <p>{% translate 'The following e-mail addresses are associated with your account:' %}</p>
 
+
+
+
+
+  <!-- Change Email API -->
+
+  <u><h3>Update your current email</h3></u> <br>
+
+    
+      <div class="mb-3 row">
+      <label for="staticEmail" class="col-sm-2 col-form-label">Current Primary Email</label>
+        <div class="col-sm-10">
+          <input type="text" readonly class="form-control-plaintext" id="staticEmail" value="{{ user.email }}">
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="newEmail" class="col-sm-2 col-form-label">New Primary Email</label>
+        <div class="col-sm-10">
+          <input type="email" class="form-control required" id="newEmail" value="" required>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <label for="confirmNewEmail" class="col-sm-2 col-form-label">Confirm New Primary Email</label>
+        <div class="col-sm-10">
+          <input type="email" class="form-control required" id="confirmNewEmail" value="" required>
+        </div>
+      </div>
+       <div class="mb-3 row">
+        <button id="submitBtn" type="submit" class="btn btn-primary mb-3">Confirm identity</button>
+      </div>
+    
+
+
+
 <form action="{% url 'account_email' %}" class="email_list" method="post">
 {% csrf_token %}
 <fieldset class="blockLabels">
+  
 
-  {% for emailaddress in user.emailaddress_set.all %}
+
+{% for emailaddress in user.emailaddress_set.all %}
 <div class="radio">
   <label for="email_radio_{{forloop.counter}}" class="{% if emailaddress.primary %}primary_email{%endif%}">
 
@@ -61,6 +98,8 @@
 
 {% block inline_javascript %}
 {{ block.super }}
+<script src="{% static 'change-email/script.js' %}"></script>
+
 <script type="text/javascript">
 window.addEventListener('DOMContentLoaded',function() {
   const message = "{% translate 'Do you really want to remove the selected e-mail address?' %}";

@@ -1,0 +1,225 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+    <h5>billing Page</h5>
+    <section id="free-trail">
+        <!-- "your free trail has ended" -->
+    </section>
+    <section style="display: block;" id="member" >
+
+        <!-- next billing date -->
+        <!-- API request this month -->
+        <!-- Amount due -->
+
+        <div class="card">
+            <div class="card-body">
+                <div class="container mb-5 mt-3">
+                <div class="row d-flex align-items-baseline">
+                    <div class="col-xl-9">
+                    <p style="color: #7e8d9f;font-size: 20px;">Invoice >> <strong>ID: #123-123</strong></p>
+                    </div>
+                    <div class="col-xl-3 float-end">
+                    <a class="btn btn-light text-capitalize border-0" data-mdb-ripple-color="dark"><i
+                        class="fas fa-print text-primary"></i> Print</a>
+                    <a class="btn btn-light text-capitalize" data-mdb-ripple-color="dark"><i
+                        class="far fa-file-pdf text-danger"></i> Export</a>
+                    </div>
+                    <hr>
+                </div>
+
+                <div class="container">
+                    <div class="col-md-12">
+                    <div class="text-center">
+                        <i class="fab fa-mdb fa-4x ms-0" style="color:#5d9fc5 ;"></i>
+                        <p class="pt-0">SAAS.com</p>
+                    </div>
+
+                    </div>
+
+
+                    <div class="row">
+                    <div class="col-xl-8">
+                        <ul class="list-unstyled">
+                        <li class="text-muted">To: <span style="color:#5d9fc5 ;">John Lorem</span></li>
+                        <li class="text-muted">Street, City</li>
+                        <li class="text-muted">State, Country</li>
+                        <li class="text-muted"><i class="fas fa-phone"></i> 123-456-789</li>
+                        </ul>
+                    </div>
+                    <div class="col-xl-4">
+                        <p class="text-muted">Invoice</p>
+                        <ul class="list-unstyled">
+                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span
+                            class="fw-bold">User: </span>{{request.user.username}}</li>
+                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span
+                            class="fw-bold">Account Creation Date: </span> {{request.user.date_joined}}</li>
+                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span
+                            class="me-1 fw-bold">Status:</span><span style="background-color:#60bdf3 ;" class="badge text-black fw-bold">
+                            Member</span></li>
+                        </ul>
+                    </div>
+                    </div>
+
+                    <div class="row my-2 mx-1 justify-content-center">
+                    <table class="table table-striped table-borderless">
+                        <thead style="background-color:#84B0CA ;" class="text-white">
+                        <tr>
+                        
+                            <th scope="col">Description</th>
+                            <th scope="col">Details</th>
+
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                        
+                            <td>Next billing date</td>
+                            <td>4.4.2022</td>
+                            
+                        </tr>
+                        <tr>
+                            
+                            <td>API requests this month</td>
+                            <td>1</td>
+
+                        </tr>
+                        <tr>
+                        
+                            <td>Amount due</td>
+                            <td>10$</td>
+
+                        </tr>
+                        </tbody>
+
+                    </table>
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                    <div class="col-xl-10">
+                        <p>Thank you for your purchase</p>
+                    </div>
+                    <div class="col-xl-2">
+                    
+                        <button type="button" style="background-color:#6a6a6a ;" class="btn text-capitalize text-white" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                        cancle subscription
+                        </button>
+                    </div>
+                    </div>
+
+                </div>
+                </div>
+            </div>
+            </div>
+
+
+    </section>
+    <section style="display: none;" id="not-member" >
+        <!-- "your free trail has ended" -->
+        <!-- Button "go Pro" -->
+
+           <div class="card">
+            <div class="card-body">
+                <div class="container mb-5 mt-3">
+                <div class="row d-flex align-items-baseline">
+                    <div class="col-xl-9">
+                    <p style="color: #7e8d9f;font-size: 20px;">Invoice >> <strong>ID: #123-123</strong></p>
+                    </div>
+                    <div class="col-xl-3 float-end">
+                    <a class="btn btn-light text-capitalize border-0" data-mdb-ripple-color="dark"><i
+                        class="fas fa-print text-primary"></i> Print</a>
+                    <a class="btn btn-light text-capitalize" data-mdb-ripple-color="dark"><i
+                        class="far fa-file-pdf text-danger"></i> Export</a>
+                    </div>
+                    <hr>
+                </div>
+
+                <div class="container">
+                    <div class="col-md-12">
+                    <div class="text-center">
+                        <i class="fab fa-mdb fa-4x ms-0" style="color:#5d9fc5 ;"></i>
+                        <p class="pt-0">SAAS.com</p>
+                    </div>
+
+                    </div>
+
+
+                    <div class="row">
+                    <div class="col-xl-8">
+                        <ul class="list-unstyled">
+                        <li class="text-muted">To: <span style="color:#5d9fc5 ;">John Lorem</span></li>
+                        <li class="text-muted">Street, City</li>
+                        <li class="text-muted">State, Country</li>
+                        <li class="text-muted"><i class="fas fa-phone"></i> 123-456-789</li>
+                        </ul>
+                    </div>
+                    <div class="col-xl-4">
+                        <p class="text-muted">Invoice</p>
+                        <ul class="list-unstyled">
+                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span
+                            class="fw-bold">User: </span>{{request.user.username}}</li>
+                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span
+                            class="fw-bold">Account Creation Date: </span> {{request.user.date_joined}}</li>
+                        <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span
+                            class="me-1 fw-bold">Status:</span><span style="background-color:#ffa600 ;" class="badge text-black fw-bold">
+                            Free Triall Expired</span></li>
+                        </ul>
+                    </div>
+                    </div>
+
+                    <div class="row my-2 mx-1 justify-content-center">
+                    
+                    </div>
+
+                    <hr>
+                    <div class="row">
+                    <div class="col-xl-10">
+                        <p>Go Pro :</p>
+                    </div>
+                    <div class="col-xl-2">
+                        <button type="button" class="btn text-capitalize text-white"
+                        style="background-color:#009edd ;">Subscibe</button>
+                    </div>
+                    </div>
+
+                </div>
+                </div>
+            </div>
+            </div>
+
+
+    </section>
+
+{% endblock content %}
+
+<!-- for canceling subscription -->
+{% block modal %}
+
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Are you sure ?</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to cacel you subscription ?
+      </div>
+      <div class="modal-footer text-center">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-danger">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock modal %}
+
+
+
+{% block inline_javascript %}
+<script src="{% static 'billing/js/billing.js' %}" ></script>
+{% endblock inline_javascript %}

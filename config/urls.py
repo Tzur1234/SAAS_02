@@ -22,6 +22,7 @@ urlpatterns = [
 urlpatterns += [
     # API base url
     path("api/", include("saas_02.core.urls", namespace='api')),
+    # path("api2/", include("config.api_router")),
     # DRF auth token
     path("auth-token/", obtain_auth_token),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),

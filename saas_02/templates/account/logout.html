@@ -1,6 +1,7 @@
 {% extends "account/base.html" %}
 
 {% load i18n %}
+{% load static %}
 
 {% block head_title %}{% translate "Sign Out" %}{% endblock %}
 
@@ -14,6 +15,14 @@
   {% if redirect_field_value %}
   <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
   {% endif %}
-  <button class="btn btn-danger" type="submit">{% translate 'Sign Out' %}</button>
+  <button id="submitBtn" class="btn btn-danger" type="submit">{% translate 'Sign Out' %}</button>
 </form>
 {% endblock %}
+
+{% block inline_javascript %}
+
+<script src="{% static 'logout/js/logout.js' %}"></script>
+
+{% endblock %}
+
+
