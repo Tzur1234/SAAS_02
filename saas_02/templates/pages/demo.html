@@ -15,7 +15,6 @@
 <!-- My css files -->
 <link href="{% static 'demo/css/styles.css' %}" />
 
-<script src="{% static 'demo/js/demo.js' %}"></script>
 {% endblock %} 
 
 
@@ -107,6 +106,77 @@
         </div>
       </div>
     </div>
+
+    <!-- check -->
+    <div class="row justify-content-center round">
+      <div class="col-lg-10 col-md-12">
+        <div class="card shadow-lg card-1">
+          <div class="card-body inner-card">
+            <div class="row justify-content-center">
+
+              <form action="subscribe.php" method="POST">
+                <div>
+                    <label for="file">Upload image</label>
+                    <input type="file" name="file" id="file" required />
+                </div>
+                <button type="submit">Submit</button>
+              </form>
+
+            </div>
+            <br />
+            <hr />
+
+            <div id="results">
+
+            </div>
+
+            <div class="row justify-content-center">
+              <div class="col-md-12 col-lg-10 col-12">
+                <div class="mb-2 mt-4">
+                  <div class="text-right">
+                    <div class="progress" style="display: none">
+                      <div
+                        class="progress-bar"
+                        role="progressbar"
+                        style="width: 10%; display: none"
+                        aria-valuenow="25"
+                        aria-valuemin="0"
+                        aria-valuemax="100"
+                      >
+                        0%
+                      </div>
+                    </div>
+                    <section class="uploaded-container">
+                      <button
+                        style="display: none"
+                        id="loading"
+                        class="btn btn-primary"
+                        type="button"
+                        disabled
+                      >
+                        <span
+                          class="spinner-grow"
+                          style="width: 1.5rem; height: 1.5rem"
+                          role="status"
+                          aria-hidden="true"
+                        ></span>
+                        Detecting faces...
+                      </button>
+                    </section>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <br />
+            <hr />
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  
+
   </div>
 </div>
 
@@ -114,65 +184,5 @@
 
 <script src="{% static 'demo/js/demo.js' %}"></script>
 
-<script>
-  function showBar() {
-    document
-      .querySelector(".progress")
-      .setAttribute("style", "display: block;");
-  }
-  function hideBar() {
-    document.querySelector(".progress").setAttribute("style", "display: none;");
-  }
-  window.addEventListener("DOMContentLoaded", () => {
-    const fileInput = document.getElementById("fileinput");
-    const uploadBtn = document.getElementById("upload-btn");
-    const progressBar = document.querySelector(".progress-bar");
-    function showLoading() {
-      document
-        .querySelector("#loading")
-        .setAttribute("style", "display: block");
-    }
 
-    function hideLoading() {
-      document.querySelector("#loading").setAttribute("style", "display: none");
-    }
-
-    uploadBtn.addEventListener("click", (e) => {
-      // show progress bar at 0%
-      document
-        .querySelector(".progress")
-        .setAttribute("style", "display: block;");
-      progressBar.setAttribute("style", `width: 0%`);
-      progressBar.innerHTML = `0%`;
-
-      e.preventDefault();
-
-      const file = fileInput.files[0];
-      const formData = new FormData();
-      formData.append("file", file);
-
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "/api/demo/", true);
-      xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
-          const percentComplete = (e.loaded / e.total) * 100;
-          progressBar.setAttribute(
-            "style",
-            `width: ${Math.round(percentComplete)}%`
-          );
-          progressBar.innerHTML = `${Math.round(percentComplete)}%`;
-        }
-      };
-
-      xhr.onload = () => {
-        if (xhr.readyState == 4) {
-          setTimeout(hideBar(), 10000);
-          showLoading()
-          
-        }
-      };
-      xhr.send(formData);
-    });
-  });
-</script>
 {% endblock inline_javascript %}

@@ -27,6 +27,16 @@ class UserAdmin(auth_admin.UserAdmin):
                 ),
             },
         ),
+        (
+            _("Stripe"),
+            {
+                "fields": (
+                    'is_member',
+                    'on_free_trial',
+                    'stripe_customer_id',
+                ),
+            },
+        ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
     list_display = ["username", "name", "is_superuser"]

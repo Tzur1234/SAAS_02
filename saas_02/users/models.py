@@ -19,7 +19,7 @@ class User(AbstractUser):
 
     # Stripe related fields : 
     is_member = models.BooleanField(default=False)
-    on_free_trail = models.BooleanField(default=False)
+    on_free_trial = models.BooleanField(default=True)
     stripe_customer_id = models.CharField(max_length=40, null=True)
 
 

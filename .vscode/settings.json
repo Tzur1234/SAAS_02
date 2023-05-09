@@ -1,4 +1,7 @@
 {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "html.format.wrapLineLength": 0
+    "html.format.wrapLineLength": 0,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    }
 }

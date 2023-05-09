@@ -27,3 +27,10 @@ django-storages==1.13.2
 
 # Stripe
 stripe==5.4.0
+
+# Face recognition
+numpy==1.24.3
+
+# Wrapper package for OpenCV python bindings.
+opencv-python==4.7.0.72
+opencv-python-headless==4.7.0.72
