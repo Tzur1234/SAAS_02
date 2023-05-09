@@ -38,6 +38,9 @@ RUN addgroup --system django \
     && adduser --system --ingroup django django
 
 
+# install the cv2 dependencies
+RUN apt-get update && apt-get install ffmpeg libsm6 libxext6  -y
+
 # Install required system dependencies
 RUN apt-get update && apt-get install --no-install-recommends -y \
   # psycopg2 dependencies

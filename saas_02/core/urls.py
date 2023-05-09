@@ -17,6 +17,11 @@ urlpatterns = [
     
     # billing 
     path("billing/", TemplateView.as_view(template_name='pages/billing.html'), name='billing'), # billing page
+    path("billing-detail/", views.UserBillingDetailsView.as_view(), name='billing-detail'), # billing page
 
-    
+    #stipe
+    path("stripe/", TemplateView.as_view(template_name='pages/stripe.html'), name='stripe'), # billing page
+    path("create-payment-intent/", views.CeatePaymentIntentView.as_view(), name='billing-detail'), # billing page
+
+   
 ]

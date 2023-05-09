@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-
+from saas_02.core.models import File
 User = get_user_model()
 
 class ChangePasswordSerializer(serializers.Serializer):
@@ -15,3 +15,12 @@ class ChangePasswordSerializer(serializers.Serializer):
     password1 = serializers.CharField(style={'input_type': 'password'})
     password2 = serializers.CharField(style={'input_type': 'password'})
     
+
+class SubscribeSerializer(serializers.Serializer):
+    stripeToken = serializers.CharField(max_length=60)
+
+class FileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = File
+        fields = '__all__'
+        
