@@ -34,6 +34,7 @@ class Membership(models.Model):
     start_date = models.DateTimeField(auto_now_add=True) # the date the user was created - start free memebership
     end_date = models.DateTimeField()
     
+    
     stripe_subscription_id = models.CharField(max_length=40, blank=True, null=True)
     stripe_subscription_item_id = models.CharField(max_length=40, blank=True, null=True)
 
@@ -56,6 +57,10 @@ class Payment(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField()
+
+    def __str__(self):
+        return f"{self.user.username} | {self.timestamp}"
+    
 
 
 # When the user created ...
@@ -88,7 +93,12 @@ def user_logged_in_receiver(sender, request, user, *args, **kwargs):
         now = datetime.datetime.now()
         if utc.localize(now) > membership.end_date:
             print('end of the memebership plane!')
-            user.on_free_trial = False   
+            user.on_free_trial = False
+            membership.type = 'N'
+            user.save()
+            membership.save()
+            
+               
         
     # Update user membership
     elif user.is_member:

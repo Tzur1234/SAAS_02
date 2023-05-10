@@ -48,7 +48,7 @@ document.addEventListener("submit", (e) => {
   };
 
   // Post data using the Fetch API
-  fetch("/api/demo/", data)
+  fetch("/api/upload/", data)
     .then((res) => res.json())
     .then((final) => {
       console.log(final);

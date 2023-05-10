@@ -99,6 +99,42 @@ function notMember(final) {
 
 }
 
+
+// Subscribe event
+document.querySelectorAll('.subscribe').forEach(element => {
+  element.addEventListener("click", () => {
+    fetchCheckoutSessionUrl().then((checkout_session_url) => {
+      // if the a checkout_session url was returned back
+      if (checkout_session_url.checkout_session_url) {
+        window.location.replace(checkout_session_url.checkout_session_url);
+      }
+    });
+  });
+
+})
+
+
+
+
+
+// fetch API
+async function fetchCheckoutSessionUrl() {
+   // send password
+   data = {
+     method: "POST",
+     headers: {
+       Authorization: `Token ${localStorage.getItem("token")}`,
+       "content-type": "application/json",
+     },
+   };
+
+   const res = await fetch("/api/create-checkout-session/", data);
+   const checkout_session_url = await res.json();
+   console.log("checkout_session_url: ", checkout_session_url);
+   return checkout_session_url;
+ }
+
+
 // Cancel subscription event
 document.getElementById("cancel-subscription").addEventListener('click', () => {
 

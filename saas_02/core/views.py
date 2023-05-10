@@ -1,12 +1,12 @@
-import sys
-import threading
+import math
 from django.shortcuts import render
 from rest_framework.views import APIView
 from rest_framework.status import (HTTP_200_OK,
                                     HTTP_500_INTERNAL_SERVER_ERROR,
                                       HTTP_400_BAD_REQUEST,
                                       HTTP_405_METHOD_NOT_ALLOWED,
-                                      HTTP_406_NOT_ACCEPTABLE)
+                                      HTTP_406_NOT_ACCEPTABLE,
+                                      HTTP_303_SEE_OTHER)
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
@@ -19,10 +19,16 @@ from saas_02.core.models import TrackedRequest, Membership
 from django.conf import settings
 from saas_02.core.image_detection import detect_faces
 from saas_02.core.permissions import IsMember
+from saas_02.core.models import Payment
+from django.http import HttpResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth import get_user_model
+User = get_user_model()
 
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
 import datetime
+from stripe.error import SignatureVerificationError
 
 def get_user_from_token(request):
     '''
@@ -41,33 +47,33 @@ def get_user_from_token(request):
 def get_type_display(type):
     return settings.MEMBERSHIP_CHOICES(type)
 
-
-class FileUploadView(APIView):
-    permission_classes = (AllowAny,)
+# not in use any more
+# class FileUploadView(APIView):
+    # permission_classes = (AllowAny,)
 
    
-    def post(self, request, *args, **kwargs):
+    # def post(self, request, *args, **kwargs):
         # Check image size < 5MB
-        length = request.META.get('CONTENT_LENGTH')
-        if int(length) > 5000000:
-            return Response(data={'message': 'Image Size is greater than 5MB !'}, status=HTTP_400_BAD_REQUEST)
+        # length = request.META.get('CONTENT_LENGTH')
+        # if int(length) > 5000000:
+        #     return Response(data={'message': 'Image Size is greater than 5MB !'}, status=HTTP_400_BAD_REQUEST)
         
-        try:
-            file_serializer = FileSerializer(data=request.data)
-            if file_serializer.is_valid():
-                file_serializer.save()
-                image_path = file_serializer.data['file']
-                recognition = detect_faces(image_path=image_path)
-                data = {
-                    "message": 'The image was uploaded !',
-                    'result': recognition 
-                }
-                return Response(data=data, status=HTTP_200_OK)
-            else:
-                return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            print('Erorr: ', e)
-            return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        # try:
+        #     file_serializer = FileSerializer(data=request.data)
+        #     if file_serializer.is_valid():
+        #         file_serializer.save()
+        #         image_path = file_serializer.data['file']
+        #         recognition = detect_faces(image_path=image_path)
+        #         data = {
+        #             "message": 'The image was uploaded !',
+        #             'result': recognition 
+        #         }
+        #         return Response(data=data, status=HTTP_200_OK)
+        #     else:
+        #         return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
+        # except Exception as e:
+        #     print('Erorr: ', e)
+        #     return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ImageRecognitionView(APIView):
     permission_classes = (IsMember,)
@@ -75,10 +81,21 @@ class ImageRecognitionView(APIView):
         user = get_user_from_token(request)
         
         # track the requests of the user
-        tracked_request = TrackedRequest()
-        tracked_request.user = user
-        tracked_request.endpoint = '/api/upload/image-recognition/'
-        tracked_request.save()
+        print('ImageRecognitionView / user.membership.type: ', user.membership.type)
+        if user.membership.type == 'M': 
+            
+            # usage_record = stripe.SubscriptionItem.create_usage_record(
+            #     subscription_item = user.membership.stripe_subscription_item_id,
+            #     quantity=1,
+            #     timestamp=math.floor(datetime.datetime.now().timestamp()),
+            #     )
+            
+            tracked_request = TrackedRequest()
+            tracked_request.user = user
+            tracked_request.endpoint = '/api/upload/image-recognition/'
+            # tracked_request.usage_record_id = usage_record.id
+            
+            tracked_request.save()
        
 
         
@@ -213,71 +230,6 @@ class UserBillingDetailsView(APIView):
 
         return Response(data=obj, status=HTTP_200_OK)
 
-class CeatePaymentIntentView(APIView):
-
-    '''
-    Create PaymentIntent object 
-    Return the client_secret, used to complete a payment from your frontend.
-    '''
-    permission_classes = (IsAuthenticated,)
-
-    def post(self, request, *args, **kwargs):            
-        user = get_user_from_token(request)
-        membership = user.membership
-
-        try:
-            customer = stripe.Customer.retrieve(user.stripe_customer_id)
-            serializer = SubscribeSerializer(data=request.data)
-
-            print('customer:', customer)
-            print('membership:', membership)
-
-            if serializer.is_valid():
-                # get the token
-                stipe_token = serializer.data['stripeToken']
-                print('stipe_token:', stipe_token)
-
-                # create the stripe subscription
-                subscription = stripe.Subscription.create(
-                    customer=customer.id,
-                    items=[{"plan": settings.STRIPE_PLAN_ID}]
-                )
-                
-                
-                 # update the membership
-                membership.stripe_subscription_id = subscription.id
-                membership.stripe_subscription_item_id = subscription['items']['data'][0]['id']
-                membership.type = 'M'
-                membership.start_date = datetime.datetime.now()
-                membership.end_date = datetime.datetime.fromtimestamp(subscription.current_period_end)
-                membership.save()
-
-                # update the user
-                user.is_member = True
-                user.on_free_trial = False
-                user.save()
-
-                # create the payment
-                payment = Payment()
-                payment.amount = subscription.plan.amount / 100
-                payment.user = user
-                payment.save()
-
-                return Response({'message': "success"}, status=HTTP_200_OK)
-            
-            else:
-                return Response(data={'message':'this givven data is invalid'}, status=HTTP_400_BAD_REQUEST)
-
-            
-        except stripe.error.CardError as e:
-            return Response({'message': "Your card has been declined"}, status=HTTP_400_BAD_REQUEST)
-
-        except stripe.error.StripeError as e:
-            return Response({'message': "There was an error. You have not been billed. If this persists please contact support"}, status=HTTP_400_BAD_REQUEST)
-
-        except Exception as e:
-            return Response({"message": "We apologize for the error. We have been informed and are working on the problem."}, status=HTTP_400_BAD_REQUEST)
-
 class CancelSubscriptionView(APIView):
     permission_classes = (IsMember,)
 
@@ -294,7 +246,8 @@ class CancelSubscriptionView(APIView):
 
 
         # update user instance
-        user.is_member = False 
+        user.is_member = False
+        user.on_free_trial = False 
         user.save()
 
         # update the membership
@@ -304,8 +257,141 @@ class CancelSubscriptionView(APIView):
 
         return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
 
+# not in use
+class SubscribeView(APIView):
+    permission_classes = (IsAuthenticated,)
 
+    def post(self, request, *args, **kwargs):
+        user = get_user_from_token(request)
+        membership = user.membership
+
+        try:
+            # get stripe Customer
+            customer = stripe.Customer.retrieve(user.stripe_customer_id)
+
+            # serialize post data (stripeToken)    
+            # get the stripe_token from the serialize data
+
+            # create the stripe subscribtion obj for this customer obj
+            sub = stripe.Subscription.create(customer= customer.id,
+                                              items=[{'plane': settings.STRIPE_PLAN_ID }])
+            
+
+            # update the membership plane
+            membership.type = 'M'
+            membership.start_date = datetime.datetime.now() 
+            membership.end_date = datetime.datetime.fromtimestamp(
+                sub.current_period_end
+                )
+            membership.stripe_subscription_id = sub.id 
+            membership.save()
+
+            # update the user object
+            user.is_member = True
+            user.on_free_trial = False
+            user.save()
+
+            # create a payment
+            payment = Payment()
+            payment.user = user
+            payment.amount = sub.plan.amount / 100
+            payment.save()
+
+            
+            return Response({'message': 'Success!'}, status=HTTP_200_OK)
+
+        except stripe.error.CardError as e:
+            return Response({'message': 'Your card has been declined!'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        except stripe.error.StripeErorr as e:
+            return Response({'message': f'There is a stripe error: \n {str(e)}'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        except Exception as e:
+            return Response(data={'message':'An error has occured'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+class CreateCheckoutSessionView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def post(slef, request, *args, **kwargs):
+        user = get_user_from_token(request)
+        try: 
+
+            checkout_session = stripe.checkout.Session.create(
+            line_items=[
+                {
+                    'price': 'price_1N6ASaESXHNK1nmVHT8o8Vno'                    
+                },
+            ],
+            mode='subscription',
+            success_url= settings.DOMAIN + '/api/billing/',
+            cancel_url= settings.DOMAIN + '/api/billing/',
+            customer = user.stripe_customer_id)
         
+            return Response(data={
+                'message': 'Success !',
+                'checkout_session_url' : checkout_session.url,
+            }, status=HTTP_303_SEE_OTHER)
+        
+        except Exception as e:
+            return Response(data={'message': f"Error ! : {str(e)}"})
+
+@csrf_exempt        
+def webhook(request, *args, **kwargs):
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload,
+            sig_header,
+            settings.STRIPE_SIGNING_SECRET
+        )
+
+        # subscriving event
+        if event['type'] == 'checkout.session.completed':
+
+            stripe_customer_id = event.data.object.customer
+            user = User.objects.get(stripe_customer_id=stripe_customer_id)
+            membership = user.membership
+            
+            sub = stripe.Subscription.retrieve(event.data.object.subscription)
+
+            # update the membership plane
+            membership.type = 'M'
+            membership.stripe_subscription_item_id = sub['items']['data'][0]['id']
+            membership.start_date = datetime.datetime.now() 
+            membership.end_date = datetime.datetime.fromtimestamp(
+                sub.current_period_end
+                )
+            membership.stripe_subscription_id = sub.id 
+            membership.save()
+
+            # update the user object
+            user.is_member = True
+            user.on_free_trial = False
+            user.save()
+
+            # create a payment
+            payment = Payment()
+            payment.user = user
+            # print('sub.plan.amount: ', sub.plan.amount)
+            payment.amount = event.data.object.amount_total / 100
+            payment.save()
+
+            return HttpResponse(status=200)
+        else:
+            #un-subscribe event
+            pass
+            
+    except ValueError as e:
+        print('Error !',e)
+        return HttpResponse(status=400)
+    except SignatureVerificationError as e:
+        print('Error !!',e)
+        return HttpResponse(status=400)
+      
+
+    
+    # ... handle other event types
+
 
 
 
