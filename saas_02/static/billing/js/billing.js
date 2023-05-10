@@ -37,7 +37,6 @@ async function getUserBillingDetail() {
 
    const res = await fetch("/api/billing-detail/", data);
    const final = await res.json();
-
    console.log(final)
    return final
  }
@@ -79,7 +78,6 @@ function showSection(type) {
 
 // insert data
 function freeTrail(final) {
-    console.log("freeTrail(final) !");
   document.getElementById("free_trial_end_date").innerHTML =
     new Date(final["free_trial_end_date"]).toDateString();
   document.getElementById("api_request_count_free").innerHTML =
@@ -101,4 +99,29 @@ function notMember(final) {
 
 }
 
+// Cancel subscription event
+document.getElementById("cancel-subscription").addEventListener('click', () => {
 
+  sendCancelReq()
+    .then(message => {
+    console.log(message)
+  })
+    
+})
+
+// send post requst to cancel subscription
+
+async function sendCancelReq() {
+      // fetch email of the user
+    data = {
+      method: "POST",
+      headers: {
+        Authorization: `Token ${localStorage.getItem("token")}`,
+        "content-type": "application/json",
+      },
+    };
+
+    const res = await fetch("/api/cancel-subscription/", data);
+    const final = await res.json();
+    return final.message
+  }

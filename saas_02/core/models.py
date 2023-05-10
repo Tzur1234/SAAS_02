@@ -47,6 +47,10 @@ class TrackedRequest(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     usage_record_id = models.CharField(max_length=50, blank=True, null=True) # ?
 
+    def __str__(self):
+        return f"track : {self.user.username}"
+    
+
 
 class Payment(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -62,7 +66,7 @@ def post_save_user_receiver(sender, instance, created, *args, **kwargs):
         instance.stripe_customer_id = customer.id
         instance.save()
 
-        print('instance.stripe_customer_id: ', instance.stripe_customer_id)
+        print('stripe_customer_id: ', instance.stripe_customer_id)
 
         # start the 'free membership plane'
         membership = Membership.objects.create(

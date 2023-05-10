@@ -24,3 +24,6 @@ class FileSerializer(serializers.ModelSerializer):
         model = File
         fields = '__all__'
         
+class ChangeEmailSerializer(serializers.Serializer):
+    email1Value = serializers.EmailField()
+    email2Value = serializers.EmailField()

@@ -10,11 +10,15 @@ from rest_framework.status import (HTTP_200_OK,
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.authtoken.models import Token
-from saas_02.core.serializers import ChangePasswordSerializer, SubscribeSerializer, FileSerializer
+from saas_02.core.serializers import (ChangePasswordSerializer,
+                                       SubscribeSerializer,
+                                         FileSerializer,
+                                         ChangeEmailSerializer)
 from django.contrib.auth import authenticate
 from saas_02.core.models import TrackedRequest, Membership
 from django.conf import settings
 from saas_02.core.image_detection import detect_faces
+from saas_02.core.permissions import IsMember
 
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -32,7 +36,7 @@ def get_user_from_token(request):
         user = Token.objects.get(key=token).user
         return user
     except Exception as e:
-        print('Could not retriev the user based on the given token: ', e)
+        print('Could not retrieve the user based on the given token: ', e)
 
 def get_type_display(type):
     return settings.MEMBERSHIP_CHOICES(type)
@@ -40,7 +44,14 @@ def get_type_display(type):
 
 class FileUploadView(APIView):
     permission_classes = (AllowAny,)
+
+   
     def post(self, request, *args, **kwargs):
+        # Check image size < 5MB
+        length = request.META.get('CONTENT_LENGTH')
+        if int(length) > 5000000:
+            return Response(data={'message': 'Image Size is greater than 5MB !'}, status=HTTP_400_BAD_REQUEST)
+        
         try:
             file_serializer = FileSerializer(data=request.data)
             if file_serializer.is_valid():
@@ -57,57 +68,73 @@ class FileUploadView(APIView):
         except Exception as e:
             print('Erorr: ', e)
             return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-    
-class ChangeEmailView(APIView):
+
+class ImageRecognitionView(APIView):
+    permission_classes = (IsMember,)
+    def post(self, request, *args, **kwargs):
+        user = get_user_from_token(request)
+        
+        # track the requests of the user
+        tracked_request = TrackedRequest()
+        tracked_request.user = user
+        tracked_request.endpoint = '/api/upload/image-recognition/'
+        tracked_request.save()
+       
+
+        
+        # Check image size
+        length = request.META.get('CONTENT_LENGTH')
+        if int(length) > 5000000:
+            return Response(data={'message': 'Image Size is greater than 5MB !'}, status=HTTP_400_BAD_REQUEST)
+
+        try:
+            file_serializer = FileSerializer(data=request.data)
+            if file_serializer.is_valid():
+                file_serializer.save()
+                image_path = file_serializer.data['file']
+                recognition = detect_faces(image_path=image_path)
+                data = {
+                    "message": 'The image was uploaded !',
+                    'result': recognition 
+                }
+                return Response(data=data, status=HTTP_200_OK)
+            else:
+                return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            print('Erorr: ', e)
+            return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ChangeEmailView(APIView):  
     permission_classes = (IsAuthenticated,)
     def post(self, request, *args, **kwargs):
-        
-        # Retriveing the new email (serialized)
-        try:
-            email = request.data['email']
-            if email == '':
-                raise Exception('the email is empty!')
-        except Exception as e:
-            print("Error: ", e)
-            return Response(data={"Error": 'Problem with updating the users email'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-            sys.exit()
-        
-  
         # Retrieve the user 
         user = get_user_from_token(request)
-
-        
-        # *Update* the data in the backend
+       
+        # Retriveing the new email (serialized)
         try:
-            
-            def remove():
-                # Delete all emailsAdresses
-                user.emailaddress_set.all().delete()
-                print(' Check remaining EmailAdresses' ,user.emailaddress_set.all())
+            serializer = ChangeEmailSerializer(data=request.data)
+            if serializer.is_valid():
+                if serializer.data['email1Value'] != '' and serializer.data['email2Value'] != '':
+                    if serializer.data['email1Value'] == serializer.data['email2Value']:
+                        # Delete all old email Adresses
+                        user.emailaddress_set.all().delete()
+                        print(' Check remaining EmailAdresses' ,user.emailaddress_set.all())
 
-            def add():            
-                # Set new email
-                user.email=email
-                user.save()
-
-            def check():
-                # set new email as primary
-                print('the new EmailAdress objects (line 61):' ,user.emailaddress_set.first())
-            
-            t1 = threading.Thread(target=remove)
-            t2 = threading.Thread(target=add)
-            t3 = threading.Thread(target=check)
-
-            t1.start()
-            t2.start()
-            t3.start()
+                        # Set new email
+                        user.email=serializer.data['email2Value']
+                        user.save()
+                        return Response(data={'message': 'Email was succesfuly updated !'}, status=HTTP_200_OK)
+                    else:
+                        return Response(data={'message': 'both emails must be the same !'}, status=HTTP_400_BAD_REQUEST)
+                else:
+                    return Response(data={'message': 'both emails must be filled !'}, status=HTTP_400_BAD_REQUEST)
+            else:
+                 return Response(data={'message': 'receive invalid data !'}, status=HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            print('Problem with updating the users email: ', e)
-            return Response(data={"Error": 'Problem with updating the users email'}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(data={"status receive email ->": 'True'}, status=HTTP_200_OK)
-
+            print('Error: ', e)
+            return Response(data={'message': str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+                  
 class GetUserEmailView(APIView):
     '''
     the function recieve GET request
@@ -178,8 +205,8 @@ class UserBillingDetailsView(APIView):
             'membershipType': membership.get_type_display(),    
             'free_trial_end_date': membership.end_date,
             'next_billing_date': membership.end_date,
-            'api_request_count': tracked_request_count, #
-            'amount_due': amount_due #
+            'api_request_count': tracked_request_count, 
+            'amount_due': amount_due 
         }
 
         print('User billing ojbect' ,obj)
@@ -250,6 +277,37 @@ class CeatePaymentIntentView(APIView):
 
         except Exception as e:
             return Response({"message": "We apologize for the error. We have been informed and are working on the problem."}, status=HTTP_400_BAD_REQUEST)
+
+class CancelSubscriptionView(APIView):
+    permission_classes = (IsMember,)
+
+    def post(self, request, *args, **kwargs):
+        user = get_user_from_token(request)
+        membership = user.membership
+
+        try:
+            # update stripe subscription
+            sub = stripe.Subscription.retrieve(membership.stripe_subscription_id)
+            sub.delete()
+        except Exception as e:
+            return Response({"message": "We apologize for the error. there is a stripe problem"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+        # update user instance
+        user.is_member = False 
+        user.save()
+
+        # update the membership
+        membership.type = 'N'
+        membership.save()
+
+
+        return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
+
+
+        
+
+
 
             
              

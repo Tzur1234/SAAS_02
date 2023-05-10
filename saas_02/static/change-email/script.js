@@ -53,16 +53,22 @@ window.addEventListener("DOMContentLoaded", () => {
             `;
     } else {
       // update changes in the backed
-      send(email1Value)
-      .then(() => {
-        updateEmailUI();
-      });
-
+      send(email1Value, email2Value)
+        .then(() => {
+          return updateEmailUI();
+        })
+        .then((newUpdatedEmail) => {
+          // update the UI
+          console.log(newUpdatedEmail);
+          document.getElementById("staticEmail").setAttribute("value", newUpdatedEmail);
+          document.getElementById("newEmail").setAttribute("value", null);
+          document.getElementById("confirmNewEmail").setAttribute("value", null);
+        });
     }
   }
 
   // send email
-  async function send(email) {
+  async function send(email1Value, email2Value) {
     // cleare emails from inputs
 
     data = {
@@ -71,7 +77,7 @@ window.addEventListener("DOMContentLoaded", () => {
         Authorization: `Token ${localStorage.getItem("token")}`,
         "content-type": "application/json",
       },
-      body: JSON.stringify({ email: email }),
+      body: JSON.stringify({ email1Value, email2Value }),
     };
 
     const res = await fetch("/api/change-email/", data);
@@ -92,12 +98,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const res = await fetch("/api/get-email/", data);
     const final = await res.json();
-    console.log("the new email from backend: ", final.email);
-
-    // update UI
-    document.getElementById("staticEmail").setAttribute("value", final.email);
-
-    document.getElementById("newEmail").setAttribute("value", "");
-    document.getElementById("confirmNewEmail").setAttribute("value", "");
+    return final.email
   }
 });
