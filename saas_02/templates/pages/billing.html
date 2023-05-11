@@ -111,7 +111,6 @@
                   type="button"
                   style="background-color: #00f7ff"
                   class="btn text-capitalize text-black"
-
                 >
                   Go Pro
                 </button>
@@ -371,6 +370,17 @@
   </div>
 </section>
 
+<div class="main-spinner" style="display: none">
+<div class="spinner-bg">
+  <div class="spinner-wrapper">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
+</div>
+
+
 {% endblock content %}
 
 <!-- for canceling subscription -->
@@ -504,15 +514,13 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           cancel
         </button>
-        <button  type="button" class="btn btn-primary">
-          Subscribe
-        </button>
+        <button type="button" class="btn btn-primary">Subscribe</button>
       </div>
     </div>
   </div>
 </div>
 
 {% endblock modal %} {% block inline_javascript %}
-  <script src="https://js.stripe.com/v3/"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'billing/js/billing.js' %}"></script>
 {% endblock inline_javascript %}

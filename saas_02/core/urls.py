@@ -30,7 +30,8 @@ urlpatterns = [
 
 
     # cancel-subscription
-    path("cancel-subscription/", views.CancelSubscriptionView.as_view(), name="cancel-subscription")
+    path("cancel-subscription/", views.CancelSubscriptionView.as_view(), name="cancel-subscription"),
 
-   
+#    loader
+    path("loader/", TemplateView.as_view(template_name='pages/loader.html'), name='loader'), # billing page
 ]

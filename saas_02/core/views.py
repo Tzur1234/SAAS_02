@@ -73,29 +73,34 @@ def get_type_display(type):
         #         return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
         # except Exception as e:
         #     print('Erorr: ', e)
-        #     return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        #     return    Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ImageRecognitionView(APIView):
     permission_classes = (IsMember,)
+    # throttle_scope = 'demo'
     def post(self, request, *args, **kwargs):
         user = get_user_from_token(request)
+        
         
         # track the requests of the user
         print('ImageRecognitionView / user.membership.type: ', user.membership.type)
         if user.membership.type == 'M': 
+            print('111!')
+            # Create new usage record  
+            # usage_record = stripe.SubscriptionItem.create_usage_record(
+            #     user.membership.stripe_subscription_item_id,
+            #     quantity=1,
+            #     timestamp=math.floor(datetime.datetime.now().timestamp()),
+            #     )
             
-            # to follow the request also in the Stripw side 
-            usage_record = stripe.SubscriptionItem.create_usage_record(
-                user.membership.stripe_subscription_item_id,
-                quantity=1,
-                timestamp=math.floor(datetime.datetime.now().timestamp()),
-                )
+            print('222!!')
+            
 
                         
             tracked_request = TrackedRequest()
             tracked_request.user = user
             tracked_request.endpoint = '/api/upload/image-recognition/'
-            tracked_request.usage_record_id = usage_record.id
+            # tracked_request.usage_record_id = usage_record.id
             
             tracked_request.save()
        

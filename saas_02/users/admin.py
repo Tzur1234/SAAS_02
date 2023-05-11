@@ -39,5 +39,6 @@ class UserAdmin(auth_admin.UserAdmin):
         ),
         (_("Important dates"), {"fields": ("last_login", "date_joined")}),
     )
-    list_display = ["username", "name", "is_superuser"]
+    list_display = ["username",  'is_member', 'on_free_trial', 'stripe_customer_id', "is_superuser"]
     search_fields = ["name"]
+    date_hierarchy = "date_joined"

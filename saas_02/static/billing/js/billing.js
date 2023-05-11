@@ -1,4 +1,7 @@
 window.addEventListener("load", () => {
+  // Spinner-show
+  document.querySelector('.main-spinner').setAttribute('style','display: block' )
+
 
   getUserBillingDetail()
     .then((final) => {
@@ -19,7 +22,11 @@ window.addEventListener("load", () => {
           notMember(final);
           break;
       }
-    });
+    })
+    .then(() =>{
+      // spinner hide
+      document.querySelector('.main-spinner').setAttribute('style','display: none' )
+    })
   
 
 });
@@ -103,11 +110,15 @@ function notMember(final) {
 // Subscribe event
 document.querySelectorAll('.subscribe').forEach(element => {
   element.addEventListener("click", () => {
+    // Spinner-show
+    document.querySelector('.main-spinner').setAttribute('style','display: block' )
     fetchCheckoutSessionUrl().then((checkout_session_url) => {
       // if the a checkout_session url was returned back
       if (checkout_session_url.checkout_session_url) {
         window.location.replace(checkout_session_url.checkout_session_url);
       }
+      // spinner hide
+      document.querySelector('.main-spinner').setAttribute('style','display: hide' )
     });
   });
 
@@ -134,9 +145,14 @@ async function fetchCheckoutSessionUrl() {
 
 // Un-subscription 
 document.getElementById("cancel-subscription").addEventListener('click', () => {
+  // show spinner
+  document.querySelector('.main-spinner').setAttribute('style','display: block' )
+  
 
   sendCancelReq()
     .then(message => {
+    // hide spinner
+    document.querySelector('.main-spinner').setAttribute('style','display: none' )
     console.log(message)
     showMessage(message) // show message
     location.reload() // reload the page

@@ -1,27 +1,7 @@
-// window.addEventListener("load", () => {
-//   const input = document.getElementById("fileinput");
-//   const uploadBtn = document.getElementById("upload-btn");
-
-//   //   2
-//   const onSelectFile = () => upload(input.files[0]);
-
-//   // 3
-//   showLoading()
-//   setTimeout(hideLoading,3000);
-
-//   1
-// uploadBtn.addEventListener("click", onSelectFile);
-// });
-
-// function showLoading(){
-//     document.querySelector('#loading').setAttribute('style', "display: block")
-//   }
-
-// function hideLoading() {
-//   document.querySelector('#loading').setAttribute('style', "display: none")
-// }
-
 document.addEventListener("submit", (e) => {
+   // Spinner-show
+   document.querySelector('.main-spinner').setAttribute('style','display: block' )
+
   // Prevent the default form submit
   e.preventDefault();
 
@@ -51,10 +31,14 @@ document.addEventListener("submit", (e) => {
   fetch("/api/upload/", data)
     .then((res) => res.json())
     .then((final) => {
-      console.log(final);
+      console.log(final.errors);
       showMessage(final["message"]);
       showResults(final["result"]);
-    });
+    })
+    .then(( ()=> {
+       // Spinner-hide
+    document.querySelector('.main-spinner').setAttribute('style','display: none' )
+    }));
 });
 
 function showMessage(msg) {
