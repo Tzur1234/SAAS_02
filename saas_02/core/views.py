@@ -84,16 +84,18 @@ class ImageRecognitionView(APIView):
         print('ImageRecognitionView / user.membership.type: ', user.membership.type)
         if user.membership.type == 'M': 
             
-            # usage_record = stripe.SubscriptionItem.create_usage_record(
-            #     subscription_item = user.membership.stripe_subscription_item_id,
-            #     quantity=1,
-            #     timestamp=math.floor(datetime.datetime.now().timestamp()),
-            #     )
-            
+            # to follow the request also in the Stripw side 
+            usage_record = stripe.SubscriptionItem.create_usage_record(
+                user.membership.stripe_subscription_item_id,
+                quantity=1,
+                timestamp=math.floor(datetime.datetime.now().timestamp()),
+                )
+
+                        
             tracked_request = TrackedRequest()
             tracked_request.user = user
             tracked_request.endpoint = '/api/upload/image-recognition/'
-            # tracked_request.usage_record_id = usage_record.id
+            tracked_request.usage_record_id = usage_record.id
             
             tracked_request.save()
        
@@ -215,7 +217,7 @@ class UserBillingDetailsView(APIView):
             # USE API to check the monthly due
             amount_due = stripe.Invoice.upcoming(
                 customer=user.stripe_customer_id)['amount_due'] / 100
-            print('amount_due: ',amount_due)
+
 
         # object to return
         obj = {
@@ -237,25 +239,36 @@ class CancelSubscriptionView(APIView):
         user = get_user_from_token(request)
         membership = user.membership
 
-        try:
-            # update stripe subscription
-            sub = stripe.Subscription.retrieve(membership.stripe_subscription_id)
-            sub.delete()
-        except Exception as e:
-            return Response({"message": "We apologize for the error. there is a stripe problem"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        # check if the user is under membership
+        if membership.type == 'M' and not user.on_free_trial:
+
+            try:
+                # update stripe subscription
+                sub = stripe.Subscription.retrieve(membership.stripe_subscription_id)
+                sub.delete()
+            except Exception as e:
+                return Response({"message": f"We could't cancel the subcription: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-        # update user instance
-        user.is_member = False
-        user.on_free_trial = False 
-        user.save()
+            # update user instance
+            user.is_member = False
+            user.on_free_trial = False 
+            user.save()
 
-        # update the membership
-        membership.type = 'N'
-        membership.save()
+            # update the membership
+            membership.type = 'N'
+            membership.save()
+
+            # delete all TrackRequests and Payment requests
+            # print('All Tracked Request user', TrackedRequest.objects.filter(user=user))
+            # TrackedRequest.objects.filter(user=user).delete()
+            # print('All Payments the user has payed', Payment.objects.filter(user=user))
 
 
-        return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
+            return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
+        else:
+            return Response({"message": "You haven't subscribe !"}, status=HTTP_400_BAD_REQUEST)
+
 
 # not in use
 class SubscribeView(APIView):
@@ -354,6 +367,8 @@ def webhook(request, *args, **kwargs):
             
             sub = stripe.Subscription.retrieve(event.data.object.subscription)
 
+            print("sub['items']['data'][0]['id']: !!: ", sub['items']['data'][0]['id'])
+
             # update the membership plane
             membership.type = 'M'
             membership.stripe_subscription_item_id = sub['items']['data'][0]['id']
@@ -363,6 +378,9 @@ def webhook(request, *args, **kwargs):
                 )
             membership.stripe_subscription_id = sub.id 
             membership.save()
+
+            print('the membership type: ', membership.type)
+            print('the membership user: ', membership.user)
 
             # update the user object
             user.is_member = True

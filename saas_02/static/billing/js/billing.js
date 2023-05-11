@@ -114,9 +114,6 @@ document.querySelectorAll('.subscribe').forEach(element => {
 })
 
 
-
-
-
 // fetch API
 async function fetchCheckoutSessionUrl() {
    // send password
@@ -135,12 +132,14 @@ async function fetchCheckoutSessionUrl() {
  }
 
 
-// Cancel subscription event
+// Un-subscription 
 document.getElementById("cancel-subscription").addEventListener('click', () => {
 
   sendCancelReq()
     .then(message => {
     console.log(message)
+    showMessage(message) // show message
+    location.reload() // reload the page
   })
     
 })
@@ -161,3 +160,8 @@ async function sendCancelReq() {
     const final = await res.json();
     return final.message
   }
+
+
+function showMessage(message){
+
+}

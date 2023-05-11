@@ -52,9 +52,8 @@ class TrackedRequest(models.Model):
         return f"track : {self.user.username}"
     
 
-
 class Payment(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     timestamp = models.DateTimeField(auto_now_add=True)
     amount = models.FloatField()
 
