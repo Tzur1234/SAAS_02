@@ -37,7 +37,6 @@ async function getUserBillingDetail() {
 
    const res = await fetch("/api/billing-detail/", data);
    const final = await res.json();
-
    console.log(final)
    return final
  }
@@ -79,7 +78,6 @@ function showSection(type) {
 
 // insert data
 function freeTrail(final) {
-    console.log("freeTrail(final) !");
   document.getElementById("free_trial_end_date").innerHTML =
     new Date(final["free_trial_end_date"]).toDateString();
   document.getElementById("api_request_count_free").innerHTML =
@@ -102,3 +100,64 @@ function notMember(final) {
 }
 
 
+// Subscribe event
+document.querySelectorAll('.subscribe').forEach(element => {
+  element.addEventListener("click", () => {
+    fetchCheckoutSessionUrl().then((checkout_session_url) => {
+      // if the a checkout_session url was returned back
+      if (checkout_session_url.checkout_session_url) {
+        window.location.replace(checkout_session_url.checkout_session_url);
+      }
+    });
+  });
+
+})
+
+
+
+
+
+// fetch API
+async function fetchCheckoutSessionUrl() {
+   // send password
+   data = {
+     method: "POST",
+     headers: {
+       Authorization: `Token ${localStorage.getItem("token")}`,
+       "content-type": "application/json",
+     },
+   };
+
+   const res = await fetch("/api/create-checkout-session/", data);
+   const checkout_session_url = await res.json();
+   console.log("checkout_session_url: ", checkout_session_url);
+   return checkout_session_url;
+ }
+
+
+// Cancel subscription event
+document.getElementById("cancel-subscription").addEventListener('click', () => {
+
+  sendCancelReq()
+    .then(message => {
+    console.log(message)
+  })
+    
+})
+
+// send post requst to cancel subscription
+
+async function sendCancelReq() {
+      // fetch email of the user
+    data = {
+      method: "POST",
+      headers: {
+        Authorization: `Token ${localStorage.getItem("token")}`,
+        "content-type": "application/json",
+      },
+    };
+
+    const res = await fetch("/api/cancel-subscription/", data);
+    const final = await res.json();
+    return final.message
+  }

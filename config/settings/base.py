@@ -39,6 +39,13 @@ LOCALE_PATHS = [str(BASE_DIR / "locale")]
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#databases
 DATABASES = {"default": env.db("DATABASE_URL")}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
 # https://docs.djangoproject.com/en/stable/ref/settings/#std:setting-DEFAULT_AUTO_FIELD
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
@@ -300,4 +307,9 @@ STRIPE_SECRET_KEY=env('STRIPE_SECRET_KEY')
 
 STRIPE_PUBLIC_KEY=env('STRIPE_PUBLIC_KEY')
 
-STRIPE_PLAN_ID = 'facial_monthly_api_call'
+
+STRIPE_SIGNING_SECRET='whsec_WM10e5hQC06fO9yrHM5AhjextB8gxl2M'
+
+STRIPE_PLAN_ID = 'price_1N6ASaESXHNK1nmVHT8o8Vno'
+
+DOMAIN  = ''

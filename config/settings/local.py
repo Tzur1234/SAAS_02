@@ -11,7 +11,7 @@ SECRET_KEY = env(
     default="AN40KrdsKR8aRLycvYR6wiJxZEkfd9gFXTu6kiCtDgrhjTeK83sD6at0szGjrjuk",
 )
 # https://docs.djangoproject.com/en/dev/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1"]
+ALLOWED_HOSTS = ["localhost", "0.0.0.0", "127.0.0.1", 'af03-85-64-152-101.ngrok-free.app']
 
 # CACHES
 # ------------------------------------------------------------------------------
@@ -60,3 +60,4 @@ INSTALLED_APPS += ["django_extensions"]  # noqa: F405
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+DOMAIN = 'http://localhost:8000'
