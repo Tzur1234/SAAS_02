@@ -82,25 +82,25 @@ class ImageRecognitionView(APIView):
         user = get_user_from_token(request)
         
         
-        # track the requests of the user
-        print('ImageRecognitionView / user.membership.type: ', user.membership.type)
         if user.membership.type == 'M': 
-            print('111!')
-            # Create new usage record  
-            # usage_record = stripe.SubscriptionItem.create_usage_record(
-            #     user.membership.stripe_subscription_item_id,
-            #     quantity=1,
-            #     timestamp=math.floor(datetime.datetime.now().timestamp()),
-            #     )
-            
-            print('222!!')
+
+            try :
+
+                    # Create new usage record  
+                usage_record = stripe.SubscriptionItem.create_usage_record(
+                    user.membership.stripe_subscription_item_id,
+                    quantity=1,
+                    timestamp=math.floor(datetime.datetime.now().timestamp()),
+                    )
+            except Exception as e:
+                print("Error when creating usage record: ", str(e))
             
 
-                        
+                                 
             tracked_request = TrackedRequest()
             tracked_request.user = user
             tracked_request.endpoint = '/api/upload/image-recognition/'
-            # tracked_request.usage_record_id = usage_record.id
+            tracked_request.usage_record_id = usage_record.id
             
             tracked_request.save()
        

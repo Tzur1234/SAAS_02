@@ -1,10 +1,8 @@
 document.addEventListener("submit", (e) => {
-   // Spinner-show
-   document.querySelector('.main-spinner').setAttribute('style','display: block' )
-
+  
   // Prevent the default form submit
   e.preventDefault();
-
+  
   // Check file size
   const fileInput = document.getElementById("fileInput");
   const fileSize = fileInput.files[0].size;
@@ -14,11 +12,11 @@ document.addEventListener("submit", (e) => {
     alert("File size must be less than 5MB (!)");
     return ; // exit the function
   }
-
+  
   // Store reference to form to make later code easier to read
   const form = e.target;
   console.log
-
+  
   data = {
     method: "POST",
     headers: {
@@ -26,6 +24,10 @@ document.addEventListener("submit", (e) => {
     },
     body: new FormData(form)
   };
+
+  
+  // Spinner-show
+  document.querySelector('.main-spinner').setAttribute('style','display: block' )
 
   // Post data using the Fetch API
   fetch("/api/upload/", data)
