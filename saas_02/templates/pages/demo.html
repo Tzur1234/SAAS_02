@@ -1,5 +1,10 @@
 {% extends "base.html" %} {% load static i18n %} 
 
+{% block addcss %}
+    <link rel="stylesheet" href="{% static 'demo/css/style.css' %}">    
+{% endblock addcss %}
+
+
 
 {% block content %}
 <div class="container card-0 justify-content-center">
@@ -7,13 +12,8 @@
     <div class="row justify-content-center mb-5">
       <div class="col-md-10 col">
         <h3 class="font-weight-bold ml-md-0 mx-auto text-center text-sm-left">
-          UPLOAD YOUR IMAGE
+          TRY UPLOADING AN IMAGE
         </h3>
-        <p class="mt-md-4 ml-md-0 ml-2 text-center text-sm-left">
-          Entrust with heigh professionalism we are offering pixel perfect web
-          and mobile application development third party integration and
-          solution to our.
-        </p>
       </div>
     </div>
 
@@ -29,66 +29,45 @@
       </div>
     <!-- check -->
     <div class="row justify-content-center round">
-      <div class="col-lg-10 col-md-12">
+      <div class="col-lg-6 col-md-12">
         <div class="card shadow-lg card-1">
           <div class="card-body inner-card">
             <div class="row justify-content-center">
 
-              <form method="POST">
+              {% comment %} <form method="POST">
                 <div>
                     <label for="fileInput">Upload image</label>
                     <input type="file" name="file" id="fileInput" required />
                 </div>
                 <button type="submit">Submit</button>
+              </form> {% endcomment %}
+
+              <form method="POST">
+                 <div class="container col-md-6">
+                    <div class="mb-5">
+                        <label for="fileInput" class="form-label">Upload the image here</label>
+                        <input class="form-control" type="file" name="file" id="fileInput" required onchange="preview()">
+                        <button type="submit" onclick="clearImage()" class="btn btn-primary mt-3">Upload</button>
+                    </div>
+                    <img id="frame" src="" class="img-fluid" />
+                </div>
               </form>
 
             </div>
             <br />
-            <hr />
 
-            <div id="results">
+            <div id="mytitle">
+                <h4>Results</h4>
 
-            </div>
+                <div clas='mb-5' id="results">
 
-            <div class="row justify-content-center">
-              <div class="col-md-12 col-lg-10 col-12">
-                <div class="mb-2 mt-4">
-                  <div class="text-right">
-                    <div class="progress" style="display: none">
-                      <div
-                        class="progress-bar"
-                        role="progressbar"
-                        style="width: 10%; display: none"
-                        aria-valuenow="25"
-                        aria-valuemin="0"
-                        aria-valuemax="100"
-                      >
-                        0%
-                      </div>
-                    </div>
-                    <section class="uploaded-container">
-                      <button
-                        style="display: none"
-                        id="loading"
-                        class="btn btn-primary"
-                        type="button"
-                        disabled
-                      >
-                        <span
-                          class="spinner-grow"
-                          style="width: 1.5rem; height: 1.5rem"
-                          role="status"
-                          aria-hidden="true"
-                        ></span>
-                        Detecting faces...
-                      </button>
-                    </section>
-                  </div>
                 </div>
-              </div>
             </div>
+            
+            
+
             <br />
-            <hr />
+
           </div>
         </div>
       </div>
