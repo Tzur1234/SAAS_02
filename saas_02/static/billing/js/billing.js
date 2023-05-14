@@ -5,7 +5,7 @@ window.addEventListener("load", () => {
 
   getUserBillingDetail()
     .then((final) => {
-      // show window
+        // show window
         showSection(final["membershipType"]);
         return final;
     })
@@ -74,11 +74,11 @@ function showSection(type) {
       fetch_error.setAttribute("style", "display: none;");
       break;
     default:
-      console.log('fire default')
       free_trial.setAttribute("style", "display: none;");
       is_member.setAttribute("style", "display: none;");
       not_member.setAttribute("style", "display: none;");
       fetch_error.setAttribute("style", "display: block;");
+      document.getElementById('message').innerHTML = type
       break;
   }
 }

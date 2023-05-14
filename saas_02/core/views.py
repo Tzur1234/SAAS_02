@@ -186,12 +186,18 @@ class UserBillingDetailsView(APIView):
         month_start = datetime.date(today.year, today.month, 1) # the beggining of the month
         tracked_request_count = TrackedRequest.objects.filter(user=user, timestamp__gte=month_start).count()
 
-        # Callculate due
-        amount_due = 0
-        if user.is_member:
-            # USE API to check the monthly due
-            amount_due = stripe.Invoice.upcoming(
-                customer=user.stripe_customer_id)['amount_due'] / 100
+        try:
+            # Callculate due
+            amount_due = 0
+            if user.is_member:
+                # USE API to check the monthly due
+                amount_due = stripe.Invoice.upcoming(
+                    customer=user.stripe_customer_id)['amount_due'] / 100
+                print('user.stripe_customer_id:  ', user.stripe_customer_id)
+        except Exception as e:
+             obj = {'membershipType': f"Internal Error: {str(e)}"}
+             return Response(data=obj, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
 
 
         # object to return
@@ -202,8 +208,6 @@ class UserBillingDetailsView(APIView):
             'api_request_count': tracked_request_count, 
             'amount_due': amount_due 
         }
-
-        print('User billing ojbect' ,obj)
 
         return Response(data=obj, status=HTTP_200_OK)
 
@@ -243,7 +247,6 @@ class CancelSubscriptionView(APIView):
             return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
         else:
             return Response({"message": "You haven't subscribe !"}, status=HTTP_400_BAD_REQUEST)
-
 
 # not in use
 class SubscribeView(APIView):
@@ -305,7 +308,8 @@ class CreateCheckoutSessionView(APIView):
             checkout_session = stripe.checkout.Session.create(
             line_items=[
                 {
-                    'price': 'price_1N6ASaESXHNK1nmVHT8o8Vno'                    
+                    # API ID 
+                    'price': settings.STRIPE_PLAN_ID                   
                 },
             ],
             mode='subscription',
@@ -346,16 +350,11 @@ def webhook(request, *args, **kwargs):
 
             # update the membership plane
             membership.type = 'M'
-            membership.stripe_subscription_item_id = sub['items']['data'][0]['id']
+            membership.stripe_subscription_item_id = sub['items']['data'][0]['id'] 
             membership.start_date = datetime.datetime.now() 
-            membership.end_date = datetime.datetime.fromtimestamp(
-                sub.current_period_end
-                )
+            membership.end_date = datetime.datetime.fromtimestamp(sub.current_period_end)
             membership.stripe_subscription_id = sub.id 
             membership.save()
-
-            print('the membership type: ', membership.type)
-            print('the membership user: ', membership.user)
 
             # update the user object
             user.is_member = True
@@ -365,7 +364,6 @@ def webhook(request, *args, **kwargs):
             # create a payment
             payment = Payment()
             payment.user = user
-            # print('sub.plan.amount: ', sub.plan.amount)
             payment.amount = event.data.object.amount_total / 100
             payment.save()
 

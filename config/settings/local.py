@@ -60,5 +60,6 @@ if env("USE_DOCKER") == "yes":
 INSTALLED_APPS += ["django_extensions"]  # noqa: F405
 
 # Your stuff...
-# ------------------------------------------------------------------------------
-DOMAIN = 'http://localhost:8000'
+
+
+
