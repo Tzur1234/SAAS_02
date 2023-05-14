@@ -85,8 +85,7 @@ class ImageRecognitionView(APIView):
         if user.membership.type == 'M': 
 
             try :
-
-                    # Create new usage record  
+                # Create new usage record  
                 usage_record = stripe.SubscriptionItem.create_usage_record(
                     user.membership.stripe_subscription_item_id,
                     quantity=1,
@@ -100,8 +99,7 @@ class ImageRecognitionView(APIView):
             tracked_request = TrackedRequest()
             tracked_request.user = user
             tracked_request.endpoint = '/api/upload/image-recognition/'
-            tracked_request.usage_record_id = usage_record.id
-            
+            tracked_request.usage_record_id = usage_record.id        
             tracked_request.save()
        
 

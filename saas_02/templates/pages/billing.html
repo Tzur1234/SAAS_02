@@ -1,15 +1,14 @@
 {% extends "base.html" %} {% load static %} {% block content %}
-<h5>billing Page</h5>
+
 <section style="display: none" id="free_trial">
   <!-- "your free trail has ended" -->
-  <h1>free trail</h1>
   <div class="card">
     <div class="card-body">
       <div class="container mb-5 mt-3">
         <div class="row d-flex align-items-baseline">
           <div class="col-xl-9">
             <p style="color: #7e8d9f; font-size: 20px">
-              Invoice >> <strong>ID: #123-123</strong>
+              Trial <strong>Free Trial</strong>
             </p>
           </div>
           <div class="col-xl-3 float-end">
@@ -126,7 +125,6 @@
   <!-- next billing date -->
   <!-- API request this month -->
   <!-- Amount due -->
-  <h1>member trial</h1>
 
   <div class="card">
     <div class="card-body">
@@ -134,7 +132,7 @@
         <div class="row d-flex align-items-baseline">
           <div class="col-xl-9">
             <p style="color: #7e8d9f; font-size: 20px">
-              Invoice >> <strong>ID: #123-123</strong>
+              Trial <strong>Membership Trial</strong>
             </p>
           </div>
           <div class="col-xl-3 float-end">
@@ -247,16 +245,14 @@
   </div>
 </section>
 <section style="display: none" id="not_member">
-  <!-- "your free trail has ended" -->
-  <!-- Button "go Pro" -->
-  <h1>not member trial</h1>
+
   <div class="card">
     <div class="card-body">
       <div class="container mb-5 mt-3">
         <div class="row d-flex align-items-baseline">
           <div class="col-xl-9">
             <p style="color: #7e8d9f; font-size: 20px">
-              Invoice >> <strong>ID: #123-123</strong>
+              Trial <strong>Not-Member</strong>
             </p>
           </div>
           <div class="col-xl-3 float-end">
@@ -347,9 +343,7 @@
   </div>
 </section>
 <section style="display: none" id="fetch_error">
-  <!-- "your free trail has ended" -->
-  <!-- Button "go Pro" -->
-  <h1>fetch error</h1>
+
   <div class="card">
     <div class="card-body">
       <div class="container mb-5 mt-3">

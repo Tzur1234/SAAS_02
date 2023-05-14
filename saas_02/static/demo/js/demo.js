@@ -25,29 +25,39 @@ document.addEventListener("submit", (e) => {
     body: new FormData(form)
   };
 
-  
+
   // Spinner-show
-  document.querySelector('.main-spinner').setAttribute('style','display: block' )
+  spinnerUI('block')
 
   // Post data using the Fetch API
   fetch("/api/upload/", data)
-    .then((res) => res.json())
+    .then((res) => {
+      if(res.status != 200){
+        showMessage('A problem has occured. Try again', 'danger');
+        // Spinner-hide
+        spinnerUI('none')
+        return;
+      }
+      return res.json()})
+
     .then((final) => {
-      console.log(final.errors);
-      showMessage(final["message"]);
-      showResults(final["result"]);
-    })
-    .then(( ()=> {
-       // Spinner-hide
-    document.querySelector('.main-spinner').setAttribute('style','display: none' )
-    }));
+      showMessage(final["message"], 'success')
+      showResults(final['result'])
+      // hide spinner
+      spinnerUI('none')
+      })
+
 });
 
-function showMessage(msg) {
+function spinnerUI(status){
+  document.querySelector('.main-spinner').setAttribute('style',`display: ${status}` )
+}
+
+function showMessage(msg, type) {
   document.getElementById("message").outerHTML = `
   <div id="message"> 
         <div
-          class="alert alert-dismissible alert-warning"
+          class="alert alert-dismissible alert-${type}"
         >
           ${msg}
           <button
@@ -83,4 +93,9 @@ function checkFile() {
     // Upload the file
   }
 }
-// later on: to add loader graphics when uploading the data
+
+
+
+function preview() {
+  frame.src = URL.createObjectURL(event.target.files[0]);
+}
