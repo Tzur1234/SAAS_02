@@ -47,34 +47,6 @@ def get_user_from_token(request):
 def get_type_display(type):
     return settings.MEMBERSHIP_CHOICES(type)
 
-# not in use any more
-# class FileUploadView(APIView):
-    # permission_classes = (AllowAny,)
-
-   
-    # def post(self, request, *args, **kwargs):
-        # Check image size < 5MB
-        # length = request.META.get('CONTENT_LENGTH')
-        # if int(length) > 5000000:
-        #     return Response(data={'message': 'Image Size is greater than 5MB !'}, status=HTTP_400_BAD_REQUEST)
-        
-        # try:
-        #     file_serializer = FileSerializer(data=request.data)
-        #     if file_serializer.is_valid():
-        #         file_serializer.save()
-        #         image_path = file_serializer.data['file']
-        #         recognition = detect_faces(image_path=image_path)
-        #         data = {
-        #             "message": 'The image was uploaded !',
-        #             'result': recognition 
-        #         }
-        #         return Response(data=data, status=HTTP_200_OK)
-        #     else:
-        #         return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
-        # except Exception as e:
-        #     print('Erorr: ', e)
-        #     return    Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
 class ImageRecognitionView(APIView):
     permission_classes = (IsMember,)
     # throttle_scope = 'demo'
@@ -145,13 +117,13 @@ class ChangeEmailView(APIView):
                         # Set new email
                         user.email=serializer.data['email2Value']
                         user.save()
-                        return Response(data={'message': 'Email was succesfuly updated !'}, status=HTTP_200_OK)
+                        return Response(data={'message': 'Email was succesfuly updated !', 'type': 'success'}, status=HTTP_200_OK)
                     else:
-                        return Response(data={'message': 'both emails must be the same !'}, status=HTTP_400_BAD_REQUEST)
+                        return Response(data={'message': 'both emails must be the same !', 'type': 'danger'}, status=HTTP_400_BAD_REQUEST)
                 else:
-                    return Response(data={'message': 'both emails must be filled !'}, status=HTTP_400_BAD_REQUEST)
+                    return Response(data={'message': 'both emails must be filled !', 'type': 'danger'}, status=HTTP_400_BAD_REQUEST)
             else:
-                 return Response(data={'message': 'receive invalid data !'}, status=HTTP_400_BAD_REQUEST)
+                 return Response(data={'message': 'receive invalid data !', 'type': 'danger'}, status=HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             print('Error: ', e)
