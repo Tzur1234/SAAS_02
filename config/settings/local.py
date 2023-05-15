@@ -90,7 +90,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 # STATIC
 # ------------------------
 # STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
-# STATICFILES_STORAGE = "saas_02.cdn.backends.StaticRootS3Boto3Storage"
+STATICFILES_STORAGE = "saas_02.cdn.backends.StaticRootS3Boto3Storage"
 
 # MEDIA
 # ------------------------------------------------------------------------------
