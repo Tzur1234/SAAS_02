@@ -86,10 +86,9 @@ class ImageRecognitionView(APIView):
             file_serializer = FileSerializer(data=request.data)
 
             if file_serializer.is_valid():
-                print('File is validdddd!')
                 file_serializer.save()
                 image_path = file_serializer.data['file']
-                # recognition = detect_faces(image_path=image_path)
+                # recognition = detect_faces(url=image_path)
                 recognition = {}
                 data = {
                     "message": 'The image was uploaded !',
