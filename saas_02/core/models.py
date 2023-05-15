@@ -92,9 +92,7 @@ def user_logged_in_receiver(sender, request, user, *args, **kwargs):
             print('end of the memebership plane!')
             user.on_free_trial = False
             membership.type = 'N'
-            user.save()
-            membership.save()
-            
+
                
         
     # Update user membership
@@ -105,8 +103,11 @@ def user_logged_in_receiver(sender, request, user, *args, **kwargs):
             membership.end_date = datetime.datetime.fromtimestamp(
                 sub.current_period_end)
             user.is_member = True
+            membership.type = 'M'
         else:
             user.is_member = False
+            membership.type = 'N'
+            print("User is not a member!")
     else:
         pass
 
