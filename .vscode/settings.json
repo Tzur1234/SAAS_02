@@ -3,5 +3,6 @@
     "html.format.wrapLineLength": 0,
     "[python]": {
         "editor.defaultFormatter": "ms-python.python"
-    }
+    },
+    "emmet.triggerExpansionOnTab": true
 }

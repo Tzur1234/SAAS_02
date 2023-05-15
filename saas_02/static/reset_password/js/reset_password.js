@@ -28,9 +28,11 @@ window.addEventListener('load', ()=>{
           body: JSON.stringify(passwordsDic),
         };
 
+        spinnerUI('block')
         const res = await fetch("/api/password-reset/", data);
         const final = await res.json();
-
+        spinnerUI('none')
+        
 
         if(res.status !== 200){
             showAlert(final["Response message"]);
@@ -60,7 +62,7 @@ window.addEventListener('load', ()=>{
               aria-label="Close"
             ></button>
           </div>            
-            `;
+            `
     }
     function showSuccessAlert(message){
         const alert = document.getElementById("message");
@@ -68,7 +70,11 @@ window.addEventListener('load', ()=>{
              <div class="alert alert-dismissible alert-success">
           ${message}
           <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>;`;
+        </div>`
+    }
+
+    function spinnerUI(status){
+      document.querySelector('.main-spinner').setAttribute('style',`display: ${status}` )
     }
 
 
@@ -76,4 +82,5 @@ window.addEventListener('load', ()=>{
 
 
 });
+
 

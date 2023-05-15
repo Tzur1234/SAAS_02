@@ -47,54 +47,31 @@ def get_user_from_token(request):
 def get_type_display(type):
     return settings.MEMBERSHIP_CHOICES(type)
 
-# not in use any more
-# class FileUploadView(APIView):
-    # permission_classes = (AllowAny,)
-
-   
-    # def post(self, request, *args, **kwargs):
-        # Check image size < 5MB
-        # length = request.META.get('CONTENT_LENGTH')
-        # if int(length) > 5000000:
-        #     return Response(data={'message': 'Image Size is greater than 5MB !'}, status=HTTP_400_BAD_REQUEST)
-        
-        # try:
-        #     file_serializer = FileSerializer(data=request.data)
-        #     if file_serializer.is_valid():
-        #         file_serializer.save()
-        #         image_path = file_serializer.data['file']
-        #         recognition = detect_faces(image_path=image_path)
-        #         data = {
-        #             "message": 'The image was uploaded !',
-        #             'result': recognition 
-        #         }
-        #         return Response(data=data, status=HTTP_200_OK)
-        #     else:
-        #         return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
-        # except Exception as e:
-        #     print('Erorr: ', e)
-        #     return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
-
 class ImageRecognitionView(APIView):
     permission_classes = (IsMember,)
+    # throttle_scope = 'demo'
     def post(self, request, *args, **kwargs):
         user = get_user_from_token(request)
         
-        # track the requests of the user
-        print('ImageRecognitionView / user.membership.type: ', user.membership.type)
+        
         if user.membership.type == 'M': 
+
+            try :
+                # Create new usage record  
+                usage_record = stripe.SubscriptionItem.create_usage_record(
+                    user.membership.stripe_subscription_item_id,
+                    quantity=1,
+                    timestamp=math.floor(datetime.datetime.now().timestamp()),
+                    )
+            except Exception as e:
+                print("Error when creating usage record: ", str(e))
             
-            # usage_record = stripe.SubscriptionItem.create_usage_record(
-            #     subscription_item = user.membership.stripe_subscription_item_id,
-            #     quantity=1,
-            #     timestamp=math.floor(datetime.datetime.now().timestamp()),
-            #     )
-            
+
+                                 
             tracked_request = TrackedRequest()
             tracked_request.user = user
             tracked_request.endpoint = '/api/upload/image-recognition/'
-            # tracked_request.usage_record_id = usage_record.id
-            
+            tracked_request.usage_record_id = usage_record.id        
             tracked_request.save()
        
 
@@ -140,13 +117,13 @@ class ChangeEmailView(APIView):
                         # Set new email
                         user.email=serializer.data['email2Value']
                         user.save()
-                        return Response(data={'message': 'Email was succesfuly updated !'}, status=HTTP_200_OK)
+                        return Response(data={'message': 'Email was succesfuly updated !', 'type': 'success'}, status=HTTP_200_OK)
                     else:
-                        return Response(data={'message': 'both emails must be the same !'}, status=HTTP_400_BAD_REQUEST)
+                        return Response(data={'message': 'both emails must be the same !', 'type': 'danger'}, status=HTTP_400_BAD_REQUEST)
                 else:
-                    return Response(data={'message': 'both emails must be filled !'}, status=HTTP_400_BAD_REQUEST)
+                    return Response(data={'message': 'both emails must be filled !', 'type': 'danger'}, status=HTTP_400_BAD_REQUEST)
             else:
-                 return Response(data={'message': 'receive invalid data !'}, status=HTTP_400_BAD_REQUEST)
+                 return Response(data={'message': 'receive invalid data !', 'type': 'danger'}, status=HTTP_400_BAD_REQUEST)
 
         except Exception as e:
             print('Error: ', e)
@@ -209,13 +186,19 @@ class UserBillingDetailsView(APIView):
         month_start = datetime.date(today.year, today.month, 1) # the beggining of the month
         tracked_request_count = TrackedRequest.objects.filter(user=user, timestamp__gte=month_start).count()
 
-        # Callculate due
-        amount_due = 0
-        if user.is_member:
-            # USE API to check the monthly due
-            amount_due = stripe.Invoice.upcoming(
-                customer=user.stripe_customer_id)['amount_due'] / 100
-            print('amount_due: ',amount_due)
+        try:
+            # Callculate due
+            amount_due = 0
+            if user.is_member:
+                # USE API to check the monthly due
+                amount_due = stripe.Invoice.upcoming(
+                    customer=user.stripe_customer_id)['amount_due'] / 100
+                print('user.stripe_customer_id:  ', user.stripe_customer_id)
+        except Exception as e:
+             obj = {'membershipType': f"Internal Error: {str(e)}"}
+             return Response(data=obj, status=HTTP_500_INTERNAL_SERVER_ERROR)
+
+
 
         # object to return
         obj = {
@@ -226,8 +209,6 @@ class UserBillingDetailsView(APIView):
             'amount_due': amount_due 
         }
 
-        print('User billing ojbect' ,obj)
-
         return Response(data=obj, status=HTTP_200_OK)
 
 class CancelSubscriptionView(APIView):
@@ -237,25 +218,35 @@ class CancelSubscriptionView(APIView):
         user = get_user_from_token(request)
         membership = user.membership
 
-        try:
-            # update stripe subscription
-            sub = stripe.Subscription.retrieve(membership.stripe_subscription_id)
-            sub.delete()
-        except Exception as e:
-            return Response({"message": "We apologize for the error. there is a stripe problem"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
+        # check if the user is under membership
+        if membership.type == 'M' and not user.on_free_trial:
+
+            try:
+                # update stripe subscription
+                sub = stripe.Subscription.retrieve(membership.stripe_subscription_id)
+                sub.delete()
+            except Exception as e:
+                return Response({"message": f"We could't cancel the subcription: {str(e)}"}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 
-        # update user instance
-        user.is_member = False
-        user.on_free_trial = False 
-        user.save()
+            # update user instance
+            user.is_member = False
+            user.on_free_trial = False 
+            user.save()
 
-        # update the membership
-        membership.type = 'N'
-        membership.save()
+            # update the membership
+            membership.type = 'N'
+            membership.save()
+
+            # delete all TrackRequests and Payment requests
+            # print('All Tracked Request user', TrackedRequest.objects.filter(user=user))
+            # TrackedRequest.objects.filter(user=user).delete()
+            # print('All Payments the user has payed', Payment.objects.filter(user=user))
 
 
-        return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
+            return Response({"message": "The subscription was canceled succssesfuly"}, status=HTTP_200_OK)
+        else:
+            return Response({"message": "You haven't subscribe !"}, status=HTTP_400_BAD_REQUEST)
 
 # not in use
 class SubscribeView(APIView):
@@ -317,7 +308,8 @@ class CreateCheckoutSessionView(APIView):
             checkout_session = stripe.checkout.Session.create(
             line_items=[
                 {
-                    'price': 'price_1N6ASaESXHNK1nmVHT8o8Vno'                    
+                    # API ID 
+                    'price': settings.STRIPE_PLAN_ID                   
                 },
             ],
             mode='subscription',
@@ -354,13 +346,13 @@ def webhook(request, *args, **kwargs):
             
             sub = stripe.Subscription.retrieve(event.data.object.subscription)
 
+            print("sub['items']['data'][0]['id']: !!: ", sub['items']['data'][0]['id'])
+
             # update the membership plane
             membership.type = 'M'
-            membership.stripe_subscription_item_id = sub['items']['data'][0]['id']
+            membership.stripe_subscription_item_id = sub['items']['data'][0]['id'] 
             membership.start_date = datetime.datetime.now() 
-            membership.end_date = datetime.datetime.fromtimestamp(
-                sub.current_period_end
-                )
+            membership.end_date = datetime.datetime.fromtimestamp(sub.current_period_end)
             membership.stripe_subscription_id = sub.id 
             membership.save()
 
@@ -372,7 +364,6 @@ def webhook(request, *args, **kwargs):
             # create a payment
             payment = Payment()
             payment.user = user
-            # print('sub.plan.amount: ', sub.plan.amount)
             payment.amount = event.data.object.amount_total / 100
             payment.save()
 

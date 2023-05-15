@@ -1,8 +1,11 @@
 window.addEventListener("load", () => {
+  // Spinner-show
+  document.querySelector('.main-spinner').setAttribute('style','display: block' )
+
 
   getUserBillingDetail()
     .then((final) => {
-      // show window
+        // show window
         showSection(final["membershipType"]);
         return final;
     })
@@ -19,7 +22,11 @@ window.addEventListener("load", () => {
           notMember(final);
           break;
       }
-    });
+    })
+    .then(() =>{
+      // spinner hide
+      document.querySelector('.main-spinner').setAttribute('style','display: none' )
+    })
   
 
 });
@@ -67,11 +74,11 @@ function showSection(type) {
       fetch_error.setAttribute("style", "display: none;");
       break;
     default:
-      console.log('fire default')
       free_trial.setAttribute("style", "display: none;");
       is_member.setAttribute("style", "display: none;");
       not_member.setAttribute("style", "display: none;");
       fetch_error.setAttribute("style", "display: block;");
+      document.getElementById('message').innerHTML = type
       break;
   }
 }
@@ -103,18 +110,19 @@ function notMember(final) {
 // Subscribe event
 document.querySelectorAll('.subscribe').forEach(element => {
   element.addEventListener("click", () => {
+    // Spinner-show
+    document.querySelector('.main-spinner').setAttribute('style','display: block' )
     fetchCheckoutSessionUrl().then((checkout_session_url) => {
       // if the a checkout_session url was returned back
       if (checkout_session_url.checkout_session_url) {
         window.location.replace(checkout_session_url.checkout_session_url);
       }
+      // spinner hide
+      document.querySelector('.main-spinner').setAttribute('style','display: hide' )
     });
   });
 
 })
-
-
-
 
 
 // fetch API
@@ -135,12 +143,19 @@ async function fetchCheckoutSessionUrl() {
  }
 
 
-// Cancel subscription event
+// Un-subscription 
 document.getElementById("cancel-subscription").addEventListener('click', () => {
+  // show spinner
+  document.querySelector('.main-spinner').setAttribute('style','display: block' )
+  
 
   sendCancelReq()
     .then(message => {
+    // hide spinner
+    document.querySelector('.main-spinner').setAttribute('style','display: none' )
     console.log(message)
+    showMessage(message) // show message
+    location.reload() // reload the page
   })
     
 })
@@ -161,3 +176,8 @@ async function sendCancelReq() {
     const final = await res.json();
     return final.message
   }
+
+
+function showMessage(message){
+
+}

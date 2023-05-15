@@ -1,15 +1,14 @@
 {% extends "base.html" %} {% load static %} {% block content %}
-<h5>billing Page</h5>
+
 <section style="display: none" id="free_trial">
   <!-- "your free trail has ended" -->
-  <h1>free trail</h1>
   <div class="card">
     <div class="card-body">
       <div class="container mb-5 mt-3">
         <div class="row d-flex align-items-baseline">
           <div class="col-xl-9">
             <p style="color: #7e8d9f; font-size: 20px">
-              Invoice >> <strong>ID: #123-123</strong>
+              Trial <strong>Free Trial</strong>
             </p>
           </div>
           <div class="col-xl-3 float-end">
@@ -107,11 +106,10 @@
             <div class="col-xl-2">
               <a href="#!">
                 <button
-                  class="subscribe"
+                  
                   type="button"
                   style="background-color: #00f7ff"
-                  class="btn text-capitalize text-black"
-
+                  class="btn text-capitalize text-black subscribe" 
                 >
                   Go Pro
                 </button>
@@ -127,7 +125,6 @@
   <!-- next billing date -->
   <!-- API request this month -->
   <!-- Amount due -->
-  <h1>member trial</h1>
 
   <div class="card">
     <div class="card-body">
@@ -135,7 +132,7 @@
         <div class="row d-flex align-items-baseline">
           <div class="col-xl-9">
             <p style="color: #7e8d9f; font-size: 20px">
-              Invoice >> <strong>ID: #123-123</strong>
+              Trial <strong>Membership Trial</strong>
             </p>
           </div>
           <div class="col-xl-3 float-end">
@@ -248,16 +245,14 @@
   </div>
 </section>
 <section style="display: none" id="not_member">
-  <!-- "your free trail has ended" -->
-  <!-- Button "go Pro" -->
-  <h1>not member trial</h1>
+
   <div class="card">
     <div class="card-body">
       <div class="container mb-5 mt-3">
         <div class="row d-flex align-items-baseline">
           <div class="col-xl-9">
             <p style="color: #7e8d9f; font-size: 20px">
-              Invoice >> <strong>ID: #123-123</strong>
+              Trial <strong>Not-Member</strong>
             </p>
           </div>
           <div class="col-xl-3 float-end">
@@ -332,9 +327,9 @@
             <div class="col-xl-2">
               <a href="#!">
                 <button
-                  class="subscribe"
+                  
                   type="button"
-                  class="btn text-capitalize text-white"
+                  class="btn text-capitalize text-white subscribe"
                   style="background-color: #009edd"
                 >
                   Subscibe
@@ -348,9 +343,7 @@
   </div>
 </section>
 <section style="display: none" id="fetch_error">
-  <!-- "your free trail has ended" -->
-  <!-- Button "go Pro" -->
-  <h1>fetch error</h1>
+
   <div class="card">
     <div class="card-body">
       <div class="container mb-5 mt-3">
@@ -370,6 +363,18 @@
     </div>
   </div>
 </section>
+
+
+<div class="main-spinner" style="display: none">
+<div class="spinner-bg">
+  <div class="spinner-wrapper">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
+</div>
+
 
 {% endblock content %}
 
@@ -504,15 +509,13 @@
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
           cancel
         </button>
-        <button  type="button" class="btn btn-primary">
-          Subscribe
-        </button>
+        <button type="button" class="btn btn-primary">Subscribe</button>
       </div>
     </div>
   </div>
 </div>
 
 {% endblock modal %} {% block inline_javascript %}
-  <script src="https://js.stripe.com/v3/"></script>
+<script src="https://js.stripe.com/v3/"></script>
 <script src="{% static 'billing/js/billing.js' %}"></script>
 {% endblock inline_javascript %}

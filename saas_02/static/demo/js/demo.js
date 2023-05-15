@@ -1,30 +1,8 @@
-// window.addEventListener("load", () => {
-//   const input = document.getElementById("fileinput");
-//   const uploadBtn = document.getElementById("upload-btn");
-
-//   //   2
-//   const onSelectFile = () => upload(input.files[0]);
-
-//   // 3
-//   showLoading()
-//   setTimeout(hideLoading,3000);
-
-//   1
-// uploadBtn.addEventListener("click", onSelectFile);
-// });
-
-// function showLoading(){
-//     document.querySelector('#loading').setAttribute('style', "display: block")
-//   }
-
-// function hideLoading() {
-//   document.querySelector('#loading').setAttribute('style', "display: none")
-// }
-
 document.addEventListener("submit", (e) => {
+  
   // Prevent the default form submit
   e.preventDefault();
-
+  
   // Check file size
   const fileInput = document.getElementById("fileInput");
   const fileSize = fileInput.files[0].size;
@@ -34,11 +12,11 @@ document.addEventListener("submit", (e) => {
     alert("File size must be less than 5MB (!)");
     return ; // exit the function
   }
-
+  
   // Store reference to form to make later code easier to read
   const form = e.target;
   console.log
-
+  
   data = {
     method: "POST",
     headers: {
@@ -47,21 +25,39 @@ document.addEventListener("submit", (e) => {
     body: new FormData(form)
   };
 
+
+  // Spinner-show
+  spinnerUI('block')
+
   // Post data using the Fetch API
   fetch("/api/upload/", data)
-    .then((res) => res.json())
+    .then((res) => {
+      if(res.status != 200){
+        showMessage('A problem has occured. Try again', 'danger');
+        // Spinner-hide
+        spinnerUI('none')
+        return;
+      }
+      return res.json()})
+
     .then((final) => {
-      console.log(final);
-      showMessage(final["message"]);
-      showResults(final["result"]);
-    });
+      showMessage(final["message"], 'success')
+      showResults(final['result'])
+      // hide spinner
+      spinnerUI('none')
+      })
+
 });
 
-function showMessage(msg) {
+function spinnerUI(status){
+  document.querySelector('.main-spinner').setAttribute('style',`display: ${status}` )
+}
+
+function showMessage(msg, type) {
   document.getElementById("message").outerHTML = `
   <div id="message"> 
         <div
-          class="alert alert-dismissible alert-warning"
+          class="alert alert-dismissible alert-${type}"
         >
           ${msg}
           <button
@@ -97,4 +93,9 @@ function checkFile() {
     // Upload the file
   }
 }
-// later on: to add loader graphics when uploading the data
+
+
+
+function preview() {
+  frame.src = URL.createObjectURL(event.target.files[0]);
+}

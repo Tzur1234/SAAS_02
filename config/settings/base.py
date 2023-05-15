@@ -280,11 +280,24 @@ SOCIALACCOUNT_FORMS = {"signup": "saas_02.users.forms.UserSocialSignupForm"}
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
+    
         # "rest_framework.authentication.SessionAuthentication",
         "rest_framework.authentication.TokenAuthentication",
     ),
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+
+    # Trottle
+       'DEFAULT_THROTTLE_CLASSES': [
+        'rest_framework.throttling.ScopedRateThrottle',
+        'rest_framework.throttling.UserRateThrottle'
+    ],
+    'DEFAULT_THROTTLE_RATES': {
+        #   'contacts': '1000/day',
+        'demo': '3/day',
+        # 'anon': '100/day',
+        'user': '1000/day'
+    }
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -307,9 +320,11 @@ STRIPE_SECRET_KEY=env('STRIPE_SECRET_KEY')
 
 STRIPE_PUBLIC_KEY=env('STRIPE_PUBLIC_KEY')
 
-
 STRIPE_SIGNING_SECRET='whsec_WM10e5hQC06fO9yrHM5AhjextB8gxl2M'
 
 STRIPE_PLAN_ID = 'price_1N6ASaESXHNK1nmVHT8o8Vno'
 
-DOMAIN  = ''
+# STRIPE DOMAIN FOR SuccessUrl
+DOMAIN = 'http://localhost:8000'
+
+
