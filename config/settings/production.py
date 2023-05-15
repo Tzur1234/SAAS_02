@@ -55,10 +55,10 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool("DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", def
 INSTALLED_APPS += ["storages"]  # noqa: F405
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
 # AWS_ACCESS_KEY_ID = env("DJANGO_AWS_ACCESS_KEY_ID")
-AWS_ACCESS_KEY_ID = 'DO00WHXLAY8FEWK936UC'
+AWS_ACCESS_KEY_ID = 'DO00PZ3VMZCV3BFRZNWL'
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
 # AWS_SECRET_ACCESS_KEY = env("DJANGO_AWS_SECRET_ACCESS_KEY")
-AWS_SECRET_ACCESS_KEY = '4eq82j8Oa6D42j1a8fNdduxSuYTrPwXlvdwSrTfEBVM'
+AWS_SECRET_ACCESS_KEY = 'aloOXzNreTok/8zl+3nbOwWFKihCnmxo8/6UfZYfJxs'
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
 AWS_STORAGE_BUCKET_NAME = 'trydjangoloc'
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings

@@ -8,6 +8,7 @@ import os
 from django.conf import settings
 
 MEDIA_FOLDER = settings.MEDIA_ROOT
+AWS_LOCATION = settings.AWS_LOCATION
 face_detector_file = 'haarcascade_frontalface_default.xml'
 face_detector = os.path.join(MEDIA_FOLDER, face_detector_file)
 print('face_detector: ', face_detector)
@@ -21,8 +22,9 @@ def detect_faces(image_path=None, url=None):
     # Image path that can be recognized for docker also
 
     if image_path:
-               true_image_path = os.path.join(MEDIA_FOLDER, image_path.split('/media/')[1])
-               image_to_read = read_image(path = true_image_path )
+            #    true_image_path = os.path.join(MEDIA_FOLDER, image_path.split('/media/')[1])
+               true_image_path = image_path               
+               image_to_read = read_image(path = true_image_path)
     elif url:
          image_to_read = read_image(url = url )
     else:
@@ -58,6 +60,7 @@ def read_image(path=None, stream=None, url=None):
 
     ##### primarily URL but if the path is None
     ## load the image from your local repository
+    print('image path: ', path)
 
     if path is not None:
         image = cv2.imread(path)

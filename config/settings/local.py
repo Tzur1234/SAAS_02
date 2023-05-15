@@ -70,9 +70,9 @@ INSTALLED_APPS += ["django_extensions"]  # noqa: F405
 # https://django-storages.readthedocs.io/en/latest/#installation
 INSTALLED_APPS += ["storages"]  # noqa: F405
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_ACCESS_KEY_ID = 'DO00UB4VKKWBFTNDJAQ2'
+AWS_ACCESS_KEY_ID = 'DO00PZ3VMZCV3BFRZNWL'
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_SECRET_ACCESS_KEY = 'uzovkZPe4jbb0X3gQPcWm9xqI4w2Klvdch'
+AWS_SECRET_ACCESS_KEY = 'aloOXzNreTok/8zl+3nbOwWFKihCnmxo8/6UfZYfJxs'
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
 AWS_STORAGE_BUCKET_NAME = 'trydjangoloc'
 
