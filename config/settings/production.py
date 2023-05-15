@@ -47,7 +47,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS
 SECURE_HSTS_PRELOAD = env.bool("DJANGO_SECURE_HSTS_PRELOAD", default=True)
 # https://docs.djangoproject.com/en/dev/ref/middleware/#x-content-type-options-nosniff
 SECURE_CONTENT_TYPE_NOSNIFF = env.bool("DJANGO_SECURE_CONTENT_TYPE_NOSNIFF", default=True)
-
+##################################################################################################################
 
 # STORAGES
 # ------------------------------------------------------------------------------
@@ -104,6 +104,7 @@ STATICFILES_STORAGE = "saas_02.cdn.backends.StaticRootS3Boto3Storage"
 DEFAULT_FILE_STORAGE = "saas_02.cdn.backends.MediaRootS3Boto3Storage"
 # MEDIA_URL = f"https://{aws_s3_domain}/media/"
 MEDIA_URL = f"https://{AWS_LOCATION}/media/"
+
 
 # EMAIL
 # ------------------------------------------------------------------------------
@@ -191,3 +192,6 @@ SPECTACULAR_SETTINGS["SERVERS"] = [  # noqa: F405
 ]
 # Your stuff...
 # ------------------------------------------------------------------------------
+
+# STRIPE DOMAIN FOR SuccessUrl
+DOMAIN = 'https://saas2-7m8yv.ondigitalocean.app'
