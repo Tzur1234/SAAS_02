@@ -84,7 +84,9 @@ class ImageRecognitionView(APIView):
 
         try:
             file_serializer = FileSerializer(data=request.data)
+            print('the file: ', file_serializer)
             if file_serializer.is_valid():
+                print('File is validdddd!')
                 file_serializer.save()
                 image_path = file_serializer.data['file']
                 recognition = detect_faces(image_path=image_path)
@@ -96,7 +98,7 @@ class ImageRecognitionView(APIView):
             else:
                 return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print('Erorr: ', e)
+            print('Erorrir: ', e)
             return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ChangeEmailView(APIView):  

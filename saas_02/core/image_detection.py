@@ -3,7 +3,7 @@
 import numpy as np
 import urllib
 import json
-import cv2
+# import cv2
 import os
 from django.conf import settings
 
