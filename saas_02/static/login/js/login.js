@@ -38,7 +38,6 @@ window.addEventListener("DOMContentLoaded", function () {
         }
 
         const final = await res.json();
-        console.log(" the token of the admin ", final.token);
         localStorage.setItem("token", final.token);
     }
     catch(error){
@@ -53,14 +52,5 @@ window.addEventListener("DOMContentLoaded", function () {
 
   }
 
-//   function addTokenToStorage(token) {
-//     // check if token exist
-//     if (localStorage.getItem("token") != null) {
-//       // delete token
-//       localStorage.removeItem("token");
-//     }
-//     // add the token to localStorage
-//     console.log(token)
-//     localStorage.setItem("token", token);
-//   }
+
 });

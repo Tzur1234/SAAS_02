@@ -320,8 +320,7 @@ STRIPE_SIGNING_SECRET='whsec_WM10e5hQC06fO9yrHM5AhjextB8gxl2M'
 
 STRIPE_PLAN_ID = 'price_1N6ASaESXHNK1nmVHT8o8Vno'
 
-# STRIPE DOMAIN FOR SuccessUrl
-DOMAIN = 'http://localhost:8000'
+
 
 
 
