@@ -103,6 +103,7 @@ STATICFILES_STORAGE = "saas_02.cdn.backends.StaticRootS3Boto3Storage"
 
 DEFAULT_FILE_STORAGE = "saas_02.cdn.backends.MediaRootS3Boto3Storage"
 # MEDIA_URL = f"https://{aws_s3_domain}/media/"
+MEDIA_URL = f"https://{AWS_LOCATION}/media/"
 
 # EMAIL
 # ------------------------------------------------------------------------------
