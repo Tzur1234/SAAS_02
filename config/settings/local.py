@@ -27,7 +27,22 @@ CACHES = {
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+# EMAIL_BACKEND = env("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.console.EmailBackend")
+
+
+# Anymail
+# ------------------------------------------------------------------------------
+# https://anymail.readthedocs.io/en/stable/installation/#installing-anymail
+INSTALLED_APPS += ["anymail"]  # noqa: F405
+# https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
+# https://anymail.readthedocs.io/en/stable/installation/#anymail-settings-reference
+# https://anymail.readthedocs.io/en/stable/esps/sendinblue/
+EMAIL_BACKEND = "anymail.backends.sendinblue.EmailBackend"
+ANYMAIL = {
+    "SENDINBLUE_API_KEY": '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',
+    "SENDINBLUE_API_URL": env("SENDINBLUE_API_URL", default="https://api.sendinblue.com/v3/"),
+}
+
 
 # WhiteNoise
 # ------------------------------------------------------------------------------
@@ -97,6 +112,10 @@ STATICFILES_STORAGE = "saas_02.cdn.backends.StaticRootS3Boto3Storage"
 
 DEFAULT_FILE_STORAGE = "saas_02.cdn.backends.MediaRootS3Boto3Storage"
 # MEDIA_URL = f"https://{aws_s3_domain}/media/"
+
+
+# STRIPE DOMAIN FOR SuccessUrl
+DOMAIN = 'http://localhost:8000'
 
 
 
