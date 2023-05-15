@@ -63,3 +63,32 @@ INSTALLED_APPS += ["django_extensions"]  # noqa: F405
 
 
 
+
+# STORAGES
+# Your Spaces Bucket's origin URL: https://trydjangoloc.fra1.digitaloceanspaces.com
+# ------------------------------------------------------------------------------
+# https://django-storages.readthedocs.io/en/latest/#installation
+INSTALLED_APPS += ["storages"]  # noqa: F405
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_ACCESS_KEY_ID = 'DO00UB4VKKWBFTNDJAQ2'
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_SECRET_ACCESS_KEY = 'uzovkZPe4jbb0X3gQPcWm9xqI4w2Klvdch'
+# https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
+AWS_STORAGE_BUCKET_NAME = 'trydjangoloc'
+
+AWS_S3_ENDPOINT_URL = 'https://fra1.digitaloceanspaces.com'
+
+AWS_S3_REGION_NAME = 'fra1'
+
+AWS_LOCATION = 'https://trydjangoloc.fra1.digitaloceanspaces.com'
+
+
+AWS_S3_OBJECT_PARAMETERS = {
+    "CacheControl": f"max-age=86400"
+}
+
+DEFAULT_FILE_STORAGE = "saas_02.utils.storages.MediaRootS3Boto3Storage"
+
+
+
+

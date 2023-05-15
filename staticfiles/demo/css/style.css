@@ -1,0 +1,20 @@
+
+#mytitle {
+  text-align:center;
+}
+h4 {
+  position:relative;
+  display:inline-block;
+}
+h4::before, h4::after {
+  content:' ';
+  display:block;
+  position:absolute; top:50%; left:-120px;
+  width:100px; /* 100px line on either side */
+  border-bottom:1px solid #000000;
+}
+h4::after {
+  left:auto; right:-120px; /* make the "after" position on the right side of the h3 */
+}
+
+
