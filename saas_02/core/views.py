@@ -21,8 +21,10 @@ from saas_02.core.image_detection import detect_faces
 from saas_02.core.permissions import IsMember
 from saas_02.core.models import Payment
 from django.http import HttpResponse
+from django.core.mail import send_mail
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth import get_user_model
+from rest_framework.throttling import UserRateThrottle
 User = get_user_model()
 
 import stripe
@@ -49,11 +51,10 @@ def get_type_display(type):
 
 class ImageRecognitionView(APIView):
     permission_classes = (IsMember,)
-    # throttle_scope = 'demo'
+    throttle_scope = 'uploads' # Maximum 20 requests per min
     def post(self, request, *args, **kwargs):
         user = get_user_from_token(request)
-        
-        
+           
         if user.membership.type == 'M': 
 
             try :
@@ -366,6 +367,14 @@ def webhook(request, *args, **kwargs):
             payment.user = user
             payment.amount = event.data.object.amount_total / 100
             payment.save()
+
+            # send an email
+            send_mail(
+            subject="Hello from SAAS_02!",
+            message="Thank you for subscribing the SAAS2 facial recognition system! \nFrom now on you can send POST requests in the follow format: https:---/api/upload/ couple with your API Key in the headers ('Authorization' : Token <Your API Key>).\n In the response you should receive JSON response with all of the image faces. \n  ",
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[user.email],
+            fail_silently=False,)
 
             return HttpResponse(status=200)
         else:

@@ -288,15 +288,11 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 
     # Trottle
-       'DEFAULT_THROTTLE_CLASSES': [
+    'DEFAULT_THROTTLE_CLASSES': [
         'rest_framework.throttling.ScopedRateThrottle',
-        'rest_framework.throttling.UserRateThrottle'
     ],
     'DEFAULT_THROTTLE_RATES': {
-        #   'contacts': '1000/day',
-        'demo': '3/day',
-        # 'anon': '100/day',
-        'user': '1000/day'
+        'uploads': '20/min'
     }
 }
 
