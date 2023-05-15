@@ -87,7 +87,16 @@ AWS_S3_OBJECT_PARAMETERS = {
     "CacheControl": f"max-age=86400"
 }
 
-DEFAULT_FILE_STORAGE = "saas_02.utils.storages.MediaRootS3Boto3Storage"
+# STATIC
+# ------------------------
+# STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+# STATICFILES_STORAGE = "saas_02.cdn.backends.StaticRootS3Boto3Storage"
+
+# MEDIA
+# ------------------------------------------------------------------------------
+
+DEFAULT_FILE_STORAGE = "saas_02.cdn.backends.MediaRootS3Boto3Storage"
+# MEDIA_URL = f"https://{aws_s3_domain}/media/"
 
 
 

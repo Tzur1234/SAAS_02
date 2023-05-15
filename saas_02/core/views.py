@@ -17,7 +17,7 @@ from saas_02.core.serializers import (ChangePasswordSerializer,
 from django.contrib.auth import authenticate
 from saas_02.core.models import TrackedRequest, Membership
 from django.conf import settings
-from saas_02.core.image_detection import detect_faces
+# from saas_02.core.image_detection import detect_faces
 from saas_02.core.permissions import IsMember
 from saas_02.core.models import Payment
 from django.http import HttpResponse
@@ -85,9 +85,11 @@ class ImageRecognitionView(APIView):
         try:
             file_serializer = FileSerializer(data=request.data)
             if file_serializer.is_valid():
+                print('File is validdddd!')
                 file_serializer.save()
                 image_path = file_serializer.data['file']
-                recognition = detect_faces(image_path=image_path)
+                # recognition = detect_faces(image_path=image_path)
+                recognition = {}
                 data = {
                     "message": 'The image was uploaded !',
                     'result': recognition 
@@ -96,7 +98,7 @@ class ImageRecognitionView(APIView):
             else:
                 return Response(data={"message": file_serializer.errors['file'][0]}, status=HTTP_400_BAD_REQUEST)
         except Exception as e:
-            print('Erorr: ', e)
+            print('Erorrir: ', e)
             return Response(data={"message": str(e)}, status=HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ChangeEmailView(APIView):  
