@@ -195,3 +195,5 @@ SPECTACULAR_SETTINGS["SERVERS"] = [  # noqa: F405
 
 # STRIPE DOMAIN FOR SuccessUrl
 DOMAIN = 'https://saas2-7m8yv.ondigitalocean.app'
+
+STRIPE_SIGNING_SECRET='whsec_WM10e5hQC06fO9yrHM5AhjextB8gxl2M'
