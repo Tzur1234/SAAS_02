@@ -40,5 +40,7 @@ Throughout this project, I acquired valuable knowledge and skills in optimizing 
 During this project, I had the opportunity to work with Amazon S3 for the first time. Amazon S3 serves as a reliable storage solution for both static and media files. It provides seamless access and efficient management of data through an S3 compliant interface. In this specific project, I utilized the DigitalOcean Space interface, which enabled me to leverage the capabilities of Amazon S3 and effectively handle storage requirements for static and media files. This experience expanded my understanding of cloud-based storage solutions and their integration into real-world applications.
 
 
+![cover (2)](https://github.com/Tzur1234/SAAS_02/assets/113801007/d32cb0ac-f426-406a-9f1f-0cab645d42ba)
+
 
 
