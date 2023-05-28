@@ -89,7 +89,7 @@ class ImageRecognitionView(APIView):
                 file_serializer.save()
                 image_path = file_serializer.data['file']
                 # recognition = detect_faces(url=image_path)
-                recognition = {}
+                recognition = {"number of detected faces" : "--- This feature is in developement nowadays -- "}
                 data = {
                     "message": 'The image was uploaded !',
                     'result': recognition 
